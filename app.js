@@ -2,7 +2,8 @@ const express       = require('express'),
       app           = express(),
       bodyParser    = require('body-parser'),
       morgan        = require('morgan'),
-      cookieParser  = require('cookie-parser')
+      cookieSession = require('cookie-session'),
+      bcrypt        = require('bcrypt')
 
 const PORT = process.env.PORT || 3000
 
@@ -27,7 +28,13 @@ let userDatabase = {
 
 app.use(morgan('dev'))
 app.set('view engine', 'ejs')
-app.use(cookieParser())
+
+app.use(cookieSession({
+    name: 'tinyapp',
+    keys: ['Key1', 'Key2'],
+    maxAge: 24 * 60 * 60 * 1000 
+}))
+
 app.use(bodyParser.urlencoded({extended: true}))
 
 
@@ -46,7 +53,7 @@ app.post('/login', (req, res) => {
     }
 
     for (let key in userDatabase) {
-        if (userDatabase[key].email === req.body.email && userDatabase[key].password === req.body.password) {
+        if (userDatabase[key].email === req.body.email && bcrypt.compareSync(req.body.password, userDatabase[key].password)) {
             currentUser = userDatabase[key]
             break
         }
@@ -54,7 +61,7 @@ app.post('/login', (req, res) => {
 
     if (currentUser) {
         console.log(`Logging in ${currentUser.id}`)        
-        res.cookie('user_id', currentUser.id)
+        req.session.user_id = currentUser.id
         res.redirect('/urls')            
     } else {
         console.log("User not found!")
@@ -64,13 +71,13 @@ app.post('/login', (req, res) => {
 })
 
 app.post('/logout', (req, res) => {
-    console.log(`Logging out ${req.cookies.user_id}`)
-    res.clearCookie('user_id')
+    console.log(`Logging out ${req.session.user_id}`)
+    req.session = null
     res.redirect('/urls')
 })
 
 app.get('/register', (req, res) => {
-    res.render('users_new', {userID: userDatabase[req.cookies.user_id]})
+    res.render('users_new', {userID: userDatabase[req.session.user_id]})
 })
 
 app.post('/register', (req, res) => {
@@ -95,36 +102,44 @@ app.post('/register', (req, res) => {
     userDatabase[id] = {
         id: id,
         email: req.body.email,
-        password: req.body.password
+        password: bcrypt.hashSync(req.body.password, 10)
     }
 
-    res.cookie('user_id', id)
+    req.session.user_id = id
     res.redirect('/urls')
 })
 
 // URL ENDPOINTS 
 
 app.get('/urls/new', (req, res) => {
-    if (req.cookies.user_id) {
-        res.render('urls_new', {userID: userDatabase[req.cookies.user_id]})        
+    if (req.session.user_id) {
+        res.render('urls_new', {userID: userDatabase[req.session.user_id]})        
     } else {
         res.redirect('/login')
     }
 })
 
 app.post('/urls/new', (req, res) => {
-    const key = generateRandomString()
-    console.log(`Creating short url /u/${key} for ${req.body.longURL}`)
-    urlDatabase[key].url = req.body.longURL
-    res.redirect('/u/' + key)
+    if (req.session.user_id) {
+        const key = generateRandomString()
+        console.log(`Creating short url /u/${key} for ${req.body.longURL}`)
+        urlDatabase[key] = {
+            url: req.body.longURL,
+            userID: req.session.user_id
+        }
+        res.redirect('/u/' + key)
+    } else {
+        res.statusCode = 403
+        res.send("Access denied")
+    }
 })
 
 app.get('/urls/:id', (req, res) => {
-    if (urlDatabase[req.params.id].userID === req.cookies.user_id) {
+    if (urlDatabase[req.params.id].userID === req.session.user_id) {
         const varParams = {
             shortURL: req.params.id, 
             longURL: urlDatabase[req.params.id].url, 
-            userID: userDatabase[req.cookies.user_id]
+            userID: userDatabase[req.session.user_id]
         }
         res.render('urls_show', varParams)
     } else {
@@ -135,20 +150,20 @@ app.get('/urls/:id', (req, res) => {
 
 
 app.get('/urls', (req, res) => {
-    if (!req.cookies.user_id) {
+    if (!req.session.user_id) {
         res.statusCode = 403
         res.redirect('/login')
     } else {
         res.render('urls_index', {
-            urls: findUserURLS(req.cookies.user_id), 
-            userID: userDatabase[req.cookies.user_id]
+            urls: findUserURLS(req.session.user_id), 
+            userID: userDatabase[req.session.user_id]
         })        
     }
 
 })
 
 app.post('/urls/:shortURL/delete', (req, res) => {
-    if (urlDatabase[req.params.shortURL].userID === req.cookies.user_id) {
+    if (urlDatabase[req.params.shortURL].userID === req.session.user_id) {
         delete urlDatabase[req.params.shortURL]
 
         if (!urlDatabase[req.params.shortURL]) {
@@ -163,7 +178,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 })
 
 app.post('/urls/:id', (req, res) => {
-    if (urlDatabase[req.params.id].userID === req.cookies.user_id) {
+    if (urlDatabase[req.params.id].userID === req.session.user_id) {
         console.log(`Updating short url /u/${req.params.id} to ${req.body.longURL}`)
         urlDatabase[req.params.id].url = req.body.longURL
         res.redirect('/u/' + key)
