@@ -1,2 +1,15 @@
-<%- include partials/_header %>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
 
+        <title>TinyApp</title>
+    </head>
+    <body style="font-size:20px; padding:50px;">
+        <%- include partials/_header %>
+        <form action="/urls/<%= shortURL %>" method="POST" style="margin:150px;">
+            <h2><label for="longURL">Update existing URL: <%= shortURL %></label></h2>
+            <input id="longURL" type="text" name="longURL" placeholder="<%= longURL %>" style="width: 300px">
+            <input type="submit" value="Submit">
+        </form>
+    </body>
+</html>

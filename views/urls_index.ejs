@@ -9,12 +9,14 @@
         <table margin=4> 
             <th>Short URL</th>
             <th>Long URL</th>
+            <th>Edit?</th>
             <th>Delete?</th>
         <% for (key in urls) { %>
             <tr>
                 <td><%= key %></td>
                 <td><%= urls[key] %></td>
-                <td><form method="post" action="/u/<%= key %>/delete"><input type="submit" value="Delete!"></form></td>
+                <td><a href="/urls/<%= key %>">Edit!</a></td>
+                <td><form method="post" action="/urls/<%= key %>/delete"><input type="submit" value="Delete!"></form></td>
             </tr>
         <% } %>
         </table>

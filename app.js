@@ -26,11 +26,28 @@ app.post('/urls/new', (req, res) => {
 })
 
 app.get('/urls/:id', (req, res) => {
-    res.render('urls_show', {shortURL: req.params.id})
+    res.render('urls_show', {shortURL: req.params.id, longURL: urlDatabase[req.params.id]})
 })
+
 
 app.get('/urls', (req, res) => {
     res.render('urls_index', {urls: urlDatabase})
+})
+
+app.post('/urls/:shortURL/delete', (req, res) => {
+    delete urlDatabase[req.params.shortURL]
+
+    if (!urlDatabase[req.params.shortURL]) {
+        console.log(`${req.params.shortURL} deletion succeeded. Redirecting to index`)
+    }
+
+    res.redirect('/urls')
+})
+
+app.post('/urls/:id', (req, res) => {
+    console.log(`Updating short url /u/${req.params.id} to ${req.body.longURL}`)
+    urlDatabase[req.params.id] = req.body.longURL
+    res.redirect('/u/' + key)
 })
 
 app.get('/u/:shortURL', (req, res) => {
@@ -39,15 +56,7 @@ app.get('/u/:shortURL', (req, res) => {
     res.redirect(longURL)
 })
 
-app.post('/u/:shortURL/delete', (req, res) => {
-    delete urlDatabase[req.params.shortURL]
 
-    if (!urlDatabase[req.params.shortURL]) {
-        console.log(`${req.params.shortURL} deletion succeeded. Redirecting to index`)
-    }
-    
-    res.redirect('/urls')
-})
 
 function generateRandomString() {
     return Math.random().toString(36).substring(2, 8)
