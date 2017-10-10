@@ -19,8 +19,10 @@ app.get('/urls/new', (req, res) => {
 })
 
 app.post('/urls/new', (req, res) => {
-    urlDatabase[generateRandomString()] = req.body.longURL
-    res.send('Ok')
+    const key = generateRandomString()
+    console.log(`Creating short url /u/${key} for ${req.body.longURL}`)
+    urlDatabase[key] = req.body.longURL
+    res.redirect('/u/' + key)
 })
 
 app.get('/urls/:id', (req, res) => {
@@ -29,6 +31,12 @@ app.get('/urls/:id', (req, res) => {
 
 app.get('/urls', (req, res) => {
     res.render('urls_index', {urls: urlDatabase})
+})
+
+app.get('/u/:shortURL', (req, res) => {
+    const longURL = urlDatabase[req.params.shortURL]
+    if (longURL) console.log(`Redirecting to ${longURL}`)
+    res.redirect(longURL)
 })
 
 function generateRandomString() {
