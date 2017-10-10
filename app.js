@@ -32,7 +32,7 @@ app.post('/login', (req, res) => {
     let currentUser = null
 
     if(!req.body.email || !req.body.password) {
-        res.statusCode = 400
+        res.statusCode = 403
         res.send("Invalid credentials inputted")
     }
 
@@ -49,7 +49,7 @@ app.post('/login', (req, res) => {
         res.redirect('/urls')            
     } else {
         console.log("User not found!")
-        res.statusCode = 400
+        res.statusCode = 403
         res.send("Invalid credentials inputted")
     }
 })
