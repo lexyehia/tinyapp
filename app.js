@@ -7,8 +7,14 @@ const express       = require('express'),
 const PORT = process.env.PORT || 3000
 
 let urlDatabase = {
-    "b2xVn2": "http://www.lighthouselabs.ca",
-    "9sm5xK": "http://www.google.com"
+    "b2xVn2": {
+        url: "http://www.lighthouselabs.ca",
+        userID: "342242"
+    },
+    "9sm5xK": {
+        url: "http://www.google.com",
+        userID: "342242"        
+    }
 }
 
 let userDatabase = {
@@ -23,6 +29,9 @@ app.use(morgan('dev'))
 app.set('view engine', 'ejs')
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({extended: true}))
+
+
+// USER ENDPOINTS 
 
 app.get('/login', (req, res) => {
     res.render('users_login')
@@ -93,51 +102,103 @@ app.post('/register', (req, res) => {
     res.redirect('/urls')
 })
 
+// URL ENDPOINTS 
+
 app.get('/urls/new', (req, res) => {
-    res.render('urls_new', {userID: userDatabase[req.cookies.user_id]})
+    if (req.cookies.user_id) {
+        res.render('urls_new', {userID: userDatabase[req.cookies.user_id]})        
+    } else {
+        res.redirect('/login')
+    }
 })
 
 app.post('/urls/new', (req, res) => {
     const key = generateRandomString()
     console.log(`Creating short url /u/${key} for ${req.body.longURL}`)
-    urlDatabase[key] = req.body.longURL
+    urlDatabase[key].url = req.body.longURL
     res.redirect('/u/' + key)
 })
 
 app.get('/urls/:id', (req, res) => {
-    res.render('urls_show', {shortURL: req.params.id, longURL: urlDatabase[req.params.id], userID: userDatabase[req.cookies.user_id]})
+    if (urlDatabase[req.params.id].userID === req.cookies.user_id) {
+        const varParams = {
+            shortURL: req.params.id, 
+            longURL: urlDatabase[req.params.id].url, 
+            userID: userDatabase[req.cookies.user_id]
+        }
+        res.render('urls_show', varParams)
+    } else {
+        res.statusCode = 403
+        res.end("Access denied")
+    }
 })
 
 
 app.get('/urls', (req, res) => {
-    res.render('urls_index', {urls: urlDatabase, userID: userDatabase[req.cookies.user_id]})
+    if (!req.cookies.user_id) {
+        res.statusCode = 403
+        res.redirect('/login')
+    } else {
+        res.render('urls_index', {
+            urls: findUserURLS(req.cookies.user_id), 
+            userID: userDatabase[req.cookies.user_id]
+        })        
+    }
+
 })
 
 app.post('/urls/:shortURL/delete', (req, res) => {
-    delete urlDatabase[req.params.shortURL]
+    if (urlDatabase[req.params.shortURL].userID === req.cookies.user_id) {
+        delete urlDatabase[req.params.shortURL]
 
-    if (!urlDatabase[req.params.shortURL]) {
-        console.log(`${req.params.shortURL} deletion succeeded. Redirecting to index`)
+        if (!urlDatabase[req.params.shortURL]) {
+            console.log(`${req.params.shortURL} deletion succeeded. Redirecting to index`)
+        }
+
+        res.redirect('/urls')
+    } else {
+        res.statusCode = 403
+        res.end("Access denied")
     }
-
-    res.redirect('/urls')
 })
 
 app.post('/urls/:id', (req, res) => {
-    console.log(`Updating short url /u/${req.params.id} to ${req.body.longURL}`)
-    urlDatabase[req.params.id] = req.body.longURL
-    res.redirect('/u/' + key)
+    if (urlDatabase[req.params.id].userID === req.cookies.user_id) {
+        console.log(`Updating short url /u/${req.params.id} to ${req.body.longURL}`)
+        urlDatabase[req.params.id].url = req.body.longURL
+        res.redirect('/u/' + key)
+    } else {
+        res.statusCode = 403
+        res.end("Access denied")
+    }    
 })
 
+// SHORT URL ENDPOINT
+
 app.get('/u/:shortURL', (req, res) => {
-    const longURL = urlDatabase[req.params.shortURL]
+    const longURL = urlDatabase[req.params.shortURL].url
     if (longURL) console.log(`Redirecting to ${longURL}`)
     res.redirect(longURL)
 })
 
+// HELPER FUNCTIONS 
+
 function generateRandomString() {
     return Math.random().toString(36).substring(2, 8)
 }
+function findUserURLS(userId) {
+    let userURL = {}
+    
+    for (let url in urlDatabase) {
+        if (urlDatabase[url].userID === userId) {
+            userURL[url] = urlDatabase[url]
+        }
+    }
+
+    return userURL
+}
+
+// SERVER START
 
 app.listen(PORT, () => {
     console.log("Server listening on port: " + PORT)
