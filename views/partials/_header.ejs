@@ -1,9 +1,12 @@
 <header>
-    <% if (username) { %> <span>Logged in as <%= username %></span><% } %>
+    <% if (username) { %> 
+    <p><form action="/logout" method="post">Logged in as <%= username %>. <input type="submit" value="Logout"></form></p>
+    <% } else { %>
     <form action="/login" method="post">
         <label value="username">Username</label>
         <input type="text" name="username">
         <input type="submit" value="Login">
     </form>
+    <% } %>
     <br /><br />
 </header>

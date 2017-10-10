@@ -22,6 +22,12 @@ app.post('/login', (req, res) => {
     res.redirect('/urls')
 })
 
+app.post('/logout', (req, res) => {
+    console.log(`Logging out ${req.cookies.username}`)
+    res.clearCookie('username')
+    res.redirect('/urls')
+})
+
 app.get('/urls/new', (req, res) => {
     res.render('urls_new', {username: req.cookies.username})
 })
