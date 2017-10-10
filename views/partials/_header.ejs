@@ -1,1 +1,9 @@
-<header></header>
+<header>
+    <% if (username) { %> <span>Logged in as <%= username %></span><% } %>
+    <form action="/login" method="post">
+        <label value="username">Username</label>
+        <input type="text" name="username">
+        <input type="submit" value="Login">
+    </form>
+    <br /><br />
+</header>
