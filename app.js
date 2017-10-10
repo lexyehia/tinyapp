@@ -39,6 +39,16 @@ app.get('/u/:shortURL', (req, res) => {
     res.redirect(longURL)
 })
 
+app.post('/u/:shortURL/delete', (req, res) => {
+    delete urlDatabase[req.params.shortURL]
+
+    if (!urlDatabase[req.params.shortURL]) {
+        console.log(`${req.params.shortURL} deletion succeeded. Redirecting to index`)
+    }
+    
+    res.redirect('/urls')
+})
+
 function generateRandomString() {
     return Math.random().toString(36).substring(2, 8)
 }
