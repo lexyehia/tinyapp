@@ -11,35 +11,60 @@ let urlDatabase = {
     "9sm5xK": "http://www.google.com"
 }
 
+let userDatabase = {
+    "342242": {
+        id: "342242",
+        email: "bob@doyle.com",
+        password: "blabla"
+    }
+}
+
 app.use(morgan('dev'))
 app.set('view engine', 'ejs')
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({extended: true}))
 
 app.post('/login', (req, res) => {
-    console.log(`Logging in ${req.body.username}`)
-    res.cookie('username', req.body.username)
-    res.redirect('/urls')
+    let currentUser = null
+    for (let key in userDatabase) {
+        if (userDatabase[key].email === req.body.email) {
+            currentUser = userDatabase[key]
+            break
+        }
+    }
+    if (currentUser) {
+        console.log(`Logging in ${currentUser.id}`)        
+        res.cookie('userID', currentUser.id)
+    } else {
+        console.log("User not found!")
+    }
+    res.redirect('/urls')    
 })
 
 app.post('/logout', (req, res) => {
-    console.log(`Logging out ${req.cookies.username}`)
+    console.log(`Logging out ${req.cookies.user_id}`)
     res.clearCookie('username')
     res.redirect('/urls')
 })
 
 app.get('/register', (req, res) => {
-    res.render('users_new', {username: req.cookies.username})
+    res.render('users_new', {userID: userDatabase[req.cookies.user_id]})
 })
 
 app.post('/register', (req, res) => {
-    console.log(`Creating new user`)
-    urlDatabase[key] = req.body.longURL
-    res.redirect('/u/' + key)
+    const id = generateRandomString()    
+    console.log(`Creating new user with ID# ${id}`)
+    userDatabase[id] = {
+        id: id,
+        email: req.body.email,
+        password: req.body.password
+    }
+    res.cookie('user_id', id)
+    res.redirect('/urls')
 })
 
 app.get('/urls/new', (req, res) => {
-    res.render('urls_new', {username: req.cookies.username})
+    res.render('urls_new', {userID: userDatabase[req.cookies.user_id]})
 })
 
 app.post('/urls/new', (req, res) => {
@@ -50,12 +75,12 @@ app.post('/urls/new', (req, res) => {
 })
 
 app.get('/urls/:id', (req, res) => {
-    res.render('urls_show', {shortURL: req.params.id, longURL: urlDatabase[req.params.id], username: req.cookies.username})
+    res.render('urls_show', {shortURL: req.params.id, longURL: urlDatabase[req.params.id], userID: userDatabase[req.cookies.user_id]})
 })
 
 
 app.get('/urls', (req, res) => {
-    res.render('urls_index', {urls: urlDatabase, username: req.cookies.username})
+    res.render('urls_index', {urls: urlDatabase, userID: userDatabase[req.cookies.user_id]})
 })
 
 app.post('/urls/:shortURL/delete', (req, res) => {

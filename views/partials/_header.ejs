@@ -1,10 +1,10 @@
 <header>
-    <% if (username) { %> 
-    <p><form action="/logout" method="post">Logged in as <%= username %>. <input type="submit" value="Logout"></form></p>
+    <% if (userID) { %> 
+    <p><form action="/logout" method="post">Logged in as <%= userID.email %>. <input type="submit" value="Logout"></form></p>
     <% } else { %>
     <form action="/login" method="post">
-        <label value="username">Username</label>
-        <input type="text" name="username">
+        <label value="email">Email</label>
+        <input type="text" name="email">
         <input type="submit" value="Login">
     </form>
     <% } %>
