@@ -24,26 +24,39 @@ app.set('view engine', 'ejs')
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({extended: true}))
 
+app.get('/login', (req, res) => {
+    res.render('users_login')
+})
+
 app.post('/login', (req, res) => {
     let currentUser = null
+
+    if(!req.body.email || !req.body.password) {
+        res.statusCode = 400
+        res.send("Invalid credentials inputted")
+    }
+
     for (let key in userDatabase) {
-        if (userDatabase[key].email === req.body.email) {
+        if (userDatabase[key].email === req.body.email && userDatabase[key].password === req.body.password) {
             currentUser = userDatabase[key]
             break
         }
     }
+
     if (currentUser) {
         console.log(`Logging in ${currentUser.id}`)        
-        res.cookie('userID', currentUser.id)
+        res.cookie('user_id', currentUser.id)
+        res.redirect('/urls')            
     } else {
         console.log("User not found!")
+        res.statusCode = 400
+        res.send("Invalid credentials inputted")
     }
-    res.redirect('/urls')    
 })
 
 app.post('/logout', (req, res) => {
     console.log(`Logging out ${req.cookies.user_id}`)
-    res.clearCookie('username')
+    res.clearCookie('user_id')
     res.redirect('/urls')
 })
 
@@ -52,13 +65,30 @@ app.get('/register', (req, res) => {
 })
 
 app.post('/register', (req, res) => {
-    const id = generateRandomString()    
+    if (!req.body.email || !req.body.password) {
+        res.statusCode = 400
+        res.end("You left one or both fields empty!")
+        return
+    } 
+
+    for (let user in userDatabase) {
+        if (userDatabase[user].email === req.body.email) {
+            res.statusCode = 400
+            res.end("Email already taken.") 
+            return
+        }
+    }
+
+    const id = generateRandomString() 
+
     console.log(`Creating new user with ID# ${id}`)
+
     userDatabase[id] = {
         id: id,
         email: req.body.email,
         password: req.body.password
     }
+
     res.cookie('user_id', id)
     res.redirect('/urls')
 })
