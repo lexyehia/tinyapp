@@ -1,6 +1,6 @@
 <header>
-    <% if (userID) { %>
-    <p><form action="/logout?_method=DELETE" method="post">Logged in as <%= userID.email %>. <input type="submit" value="Logout"></form></p>
+    <% if (typeof user !== 'undefined') { %>
+    <p><form action="/logout?_method=DELETE" method="post">Logged in as <%= user.email %>. <input type="submit" value="Logout"></form></p>
     <% } else { %>
     <a href="/login">Login</a> | <a href="/register">Register</a>
     <% } %>

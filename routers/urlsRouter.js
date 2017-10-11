@@ -1,7 +1,5 @@
-const tools   = require('../helpers/tools'),
-         db   = require("../db/db"),
-         URL  = require('../db/url'),
-         User = require('../db/user')
+const URL  = require('../db/url'),
+      User = require('../db/user')
 
 module.exports = (app) => {
 
@@ -11,7 +9,7 @@ module.exports = (app) => {
     **/
     app.get('/urls/new', (req, res) => {
         if (User.verifySession(req.session)) {
-            res.render('urls/new', {userID: db.userDatabase[req.session.user_id]})
+            res.render('urls/new', {userID: User.find(req.session.user_id)})
         } else {
             res.redirect('/login')
         }
@@ -40,8 +38,8 @@ module.exports = (app) => {
         
         if (User.verifySession(req.session) && url.userID === req.session.user_id) {
             res.render('urls/show', {
-                url:      url,
-                userID:   User.find(req.session.user_id)
+                url : url,
+                user: User.find(req.session.user_id)
             })
         } else {
             res.status(403).send("Access denied")
@@ -91,11 +89,8 @@ module.exports = (app) => {
     app.get('/urls', (req, res) => {
         if (User.verifySession(req.session)) {
             let user = User.find(req.session.user_id)
-            
-                res.render('urls/index', {
-                    urls:          user.urls(),
-                    userID:        user
-                })
+            res.render('urls/index', { user: user, urls: user.urls() })
+
         } else {
             res.redirect(403, '/login')
         }

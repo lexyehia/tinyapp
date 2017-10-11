@@ -10,7 +10,7 @@ module.exports = (app) => {
     *   Open form page to create a new user
     **/
     app.get('/register', (req, res) => {
-        res.render('users/new', {userID: null})
+        res.render('users/new')
     })
 
     /*
@@ -35,7 +35,7 @@ module.exports = (app) => {
     *   Request login page
     **/
     app.get('/login', (req, res) => {
-        res.render('users/login', {userID: null})
+        res.render('users/login')
     })
 
     /*
