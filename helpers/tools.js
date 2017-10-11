@@ -52,11 +52,22 @@ exports.verifyHttp = (str) => {
 
 // TODO Maintain this helper or go back to if-else?
 exports.authenticateUser = (req, res, redirect) => {
+    
     if (!req.session.user_id) {
         if (redirect === undefined) {
             res.status(403).send("Access denied.")
         } else {
-            res.redirect(302, redirect)
+            res.redirect(403, redirect)
+            res.end()
         }
+    } else {
+        let user = require('../db/user').find(req.params.user_id)
+        if (user) {
+            return
+        } else {
+            req.session.user_id = null
+            res.redirect(403, redirect)
+            res.end()
+        }       
     }
 }

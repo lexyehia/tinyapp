@@ -1,5 +1,6 @@
 const tools  = require('../helpers/tools'),
       userDB = require('./db').userDatabase,
+      urlDB  = require('./db').urlDatabase,      
       bcrypt = require('bcrypt')
 
 class User {
@@ -31,6 +32,18 @@ class User {
         return delete userDB[this.id]
     }
 
+    urls() {
+        let userUrls = {}
+        
+        for (let id in urlDB) {
+            if (urlDB[id].userID === this.id) {
+                userUrls[id] = urlDB[id]
+            }
+        }
+    
+        return userUrls
+    }
+
     static retrieve(email, password) {
         if (!email || !password) return false
 
@@ -55,6 +68,21 @@ class User {
 
     static destroy(id) {
         return delete userDB[id]
+    }
+
+    static verifySession(session) {
+        
+        if (!session.user_id) {
+            return false
+        } else {
+            let user = this.find(session.user_id)
+            if (user) {
+                return session.user_id
+            } else {
+                session.user_id = null
+                return false
+            }       
+        }
     }
 }
 

@@ -61,8 +61,12 @@ module.exports = (app) => {
     *   Delete current user's session
     **/
     app.delete('/logout', (req, res) => {
-        console.log(`Logging out ${req.session.user_id}`)
-        req.session.user_id = null
-        res.redirect('/urls')
+        if (User.verifySession(req.session)) {
+            console.log(`Logging out ${req.session.user_id}`)
+            req.session.user_id = null
+            res.redirect('/urls')
+        } else {
+            res.redirecT('/urls')
+        }
     })
 }
