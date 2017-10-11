@@ -40,7 +40,7 @@ module.exports = (app) => {
     *   Open the Edit form of a particular url
     **/
     app.get('/urls/:id', (req, res) => {
-        if (db.urlDatabase[req.params.id].userID === req.session.user_id) {
+        if (req.session.user_id && db.urlDatabase[req.params.id].userID === req.session.user_id) {
             let url = db.urlDatabase[req.params.id]
             res.render('urls/show', {
                 shortURL: req.params.id,
@@ -89,16 +89,12 @@ module.exports = (app) => {
     *   List urls index
     **/
     app.get('/urls', (req, res) => {
-        if (!req.session.user_id) {
-            res.redirect(403, '/login')
-        } else {
+        tools.authenticateUser(req, res, '/login')
 
-            res.render('urls/index', {
-                urls: tools.findUserURLS(db, req.session.user_id),
-                filterUniques: tools.filterUniques,
-                userID: db.userDatabase[req.session.user_id]
-            })
-        }
-
+        res.render('urls/index', {
+            urls: tools.findUserURLS(db, req.session.user_id),
+            filterUniques: tools.filterUniques,
+            userID: db.userDatabase[req.session.user_id]
+        })
     })
 }
