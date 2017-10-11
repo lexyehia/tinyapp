@@ -41,3 +41,12 @@ exports.filterUniques = (url) => {
 
     return total.length
 }
+
+exports.verifyHttp = (str) => {
+
+    if (!/^(f|ht)tps?:\/\//i.test(str)) {
+        str = "http://" + str
+    }
+
+    return str
+}

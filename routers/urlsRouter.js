@@ -24,7 +24,7 @@ module.exports = (app) => {
             const key = tools.generateRandomString(6)
             console.log(`Creating short url /u/${key} for ${req.body.longURL}`)
             db.urlDatabase[key] = {
-                url: req.body.longURL,
+                url: tools.verifyHttp(req.body.longURL),
                 userID: req.session.user_id,
                 redirects: 0,
                 uniques: []
