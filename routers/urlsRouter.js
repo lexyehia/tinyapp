@@ -1,5 +1,6 @@
 const tools = require('../helpers/tools'),
-         db = require("../db/db")
+         db = require("../db/db"),
+         URL = require('../db/url')
 
 module.exports = (app) => {
 
@@ -21,15 +22,9 @@ module.exports = (app) => {
     **/
     app.post('/urls/new', (req, res) => {
         if (req.session.user_id) {
-            const key = tools.generateRandomString(6)
-            console.log(`Creating short url /u/${key} for ${req.body.longURL}`)
-            db.urlDatabase[key] = {
-                url:       tools.verifyHttp(req.body.longURL),
-                userID:    req.session.user_id,
-                redirects: 0,
-                uniques:   []
-            }
-            res.redirect('/u/' + key)
+            let url = new URL(req.session.user_id, req.body.longURL)
+            console.log(`Creating short url /u/${url.id} for ${url.url}`)
+            res.redirect('/u/' + url.id)
         } else {
             res.status(403).send("Access denied")
         }
@@ -40,10 +35,11 @@ module.exports = (app) => {
     *   Open the Edit form of a particular url
     **/
     app.get('/urls/:id', (req, res) => {
-        if (req.session.user_id && db.urlDatabase[req.params.id].userID === req.session.user_id) {
-            let url = db.urlDatabase[req.params.id]
+        let url = URL.find(id)
+        
+        if (req.session.user_id && url.userID === req.session.user_id) {
             res.render('urls/show', {
-                shortURL: req.params.id,
+                shortURL: url.id,
                 url:      url,
                 userID:   req.session.user_id
             })
@@ -57,10 +53,14 @@ module.exports = (app) => {
     *   Submit the Edit form, and modify existing url entry
     **/
     app.put('/urls/:id', (req, res) => {
-        if (db.urlDatabase[req.params.id].userID === req.session.user_id) {
-            console.log(`Updating short url /u/${req.params.id} to ${req.body.longURL}`)
-            db.urlDatabase[req.params.id].url = req.body.longURL
-            res.redirect('/u/' + key)
+        let url = URL.find(req.params.id)
+
+        if (url.userID === req.session.user_id) {
+            console.log(`Updating short url /u/${url.id} to ${req.body.longURL}`)
+            url.url = req.body.longURL
+            url.update()
+
+            res.redirect('/u/' + url.id)
         } else {
             res.status(403).send("Access denied")
         }
@@ -71,14 +71,12 @@ module.exports = (app) => {
     *   Delete one url
     **/
     app.delete('/urls/:id', (req, res) => {
-        if (db.urlDatabase[req.params.id].userID === req.session.user_id) {
-            delete db.urlDatabase[req.params.id]
+        let url = URL.find(req.params.id)
 
-            if (!db.urlDatabase[req.params.id]) {
-                console.log(`${req.params.id} deletion succeeded. Redirecting to index`)
-            }
-
+        if (url.userID === req.session.user_id && url.destroy()) {
+            console.log(`${req.params.id} deletion succeeded. Redirecting to index`)
             res.redirect('/urls')
+
         } else {
             res.status(403).send("Access denied")
         }
