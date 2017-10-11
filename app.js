@@ -2,64 +2,49 @@ const express       = require('express'),
       app           = express(),
       bodyParser    = require('body-parser'),
       morgan        = require('morgan'),
+      fs            = require('fs'),
+      methodOver    = require('method-override'),
       cookieSession = require('cookie-session'),
-      bcrypt        = require('bcrypt'),
-      urlsRouter    = require('./routers/urlsRouter'),
-      usersRouter   = require('./routers/usersRouter')
+      db            = require('./db/db')
+
+// Set port, either from environmental variable or default to 8080
 
 const PORT = process.env.PORT || 8080
 
-let urlDatabase = {
-    "b2xVn2": {
-        url: "http://www.lighthouselabs.ca",
-        userID: "342242"
-    },
-    "9sm5xK": {
-        url: "http://www.google.com",
-        userID: "342242"        
-    }
-}
-
-let userDatabase = {
-    "342242": {
-        id: "342242",
-        email: "bob@doyle.com",
-        password: "blabla"
-    }
-}
+// Set middle-ware
 
 app.use(morgan('dev'))
 app.set('view engine', 'ejs')
-
+app.use(methodOver('_method'))
+app.use(bodyParser.urlencoded({extended: true}))
 app.use(cookieSession({
     name: 'tinyapp',
     keys: ['Key1', 'Key2'],
     maxAge: 24 * 60 * 60 * 1000 
 }))
 
-app.use(bodyParser.urlencoded({extended: true}))
-
-
 // Read the Routers subdirectory and require each file there
 // then pass the app object to them, for each resource type
 
 fs.readdirSync('./routers/').forEach(file => {
     const name = file.substr(0, file.indexOf('.'))
-    require('./' + name)(app)
+    require('./routers/' + name)(app)
 })
 
 // The uri endpoint for shortened urls
 
 app.get('/u/:shortURL', (req, res) => {
-    const longURL = urlDatabase[req.params.shortURL].url
-    if (longURL) console.log(`Redirecting to ${longURL}`)
-    res.redirect(longURL)
+    const url = db.urlDatabase[req.params.shortURL]
+    if (url) {
+        console.log(`Redirecting to ${url.url}`)
+        url.redirects++
+        res.redirect(url.url)
+    } else {
+        res.redirect('/urls')
+    }
 })
 
-// HELPER FUNCTIONS 
-
-
-// SERVER START
+// Start server
 
 app.listen(PORT, () => {
     console.log("Server listening on port: " + PORT)

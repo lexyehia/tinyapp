@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <title>TinyApp</title>
+
+        <style>
+            table {
+                color: #333;
+                font-family: Helvetica, Arial, sans-serif;
+                width: 640px;
+                border-collapse: collapse;
+                border-spacing: 0;
+            }
+            td, th {
+                border: 1px solid #CCC;
+                height: 30px;
+            }
+            th {
+                background: #F3F3F3;
+                font-weight: bold;
+            }
+            td {
+                background: #FAFAFA;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <%- include ../partials/_header %>
+        <div align="center">
+        <table margin=4>
+            <th>Short URL</th>
+            <th>Long URL</th>
+            <th>Redirects</th>
+            <th>Edit?</th>
+            <th>Delete?</th>
+        <% for (key in urls) { %>
+            <tr>
+                <td>localhost:8080/u/<b><%= key %></b></td>
+                <td><%= urls[key].url %></td>
+                <td><%= urls[key].redirects %></td>
+                <td><a href="/urls/<%= key %>">Edit!</a></td>
+                <td><form method="post" action="/urls/<%= key %>?_method=DELETE"><input type="submit" value="Delete!"></form></td>
+            </tr>
+        <% } %>
+        </table>
+        <p><a href="/urls/new">New Short URL!</a></p>
+        </div>
+    </body>
+</html>

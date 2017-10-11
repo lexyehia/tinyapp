@@ -1,20 +1,32 @@
+const tools = require('../helpers/tools'),
+         db = require("../db/db")
+
 module.exports = (app) => {
 
+    /*
+    *   GET /urls/new
+    *   Open new url form
+    **/
     app.get('/urls/new', (req, res) => {
         if (req.session.user_id) {
-            res.render('urls_new', {userID: userDatabase[req.session.user_id]})        
+            res.render('urls/new', {userID: db.userDatabase[req.session.user_id]})
         } else {
             res.redirect('/login')
         }
     })
 
+    /*
+    *   POST /urls/new
+    *   Submit new url for registration, redirect to created url
+    **/
     app.post('/urls/new', (req, res) => {
         if (req.session.user_id) {
-            const key = generateRandomString()
+            const key = tools.generateRandomString()
             console.log(`Creating short url /u/${key} for ${req.body.longURL}`)
-            urlDatabase[key] = {
+            db.urlDatabase[key] = {
                 url: req.body.longURL,
-                userID: req.session.user_id
+                userID: req.session.user_id,
+                redirects: 0
             }
             res.redirect('/u/' + key)
         } else {
@@ -23,40 +35,49 @@ module.exports = (app) => {
         }
     })
 
+    /*
+    *   GET /urls/{ID}
+    *   Open the Edit form of a particular url
+    **/
     app.get('/urls/:id', (req, res) => {
-        if (urlDatabase[req.params.id].userID === req.session.user_id) {
+        if (db.urlDatabase[req.params.id].userID === req.session.user_id) {
             const varParams = {
                 shortURL: req.params.id, 
-                longURL: urlDatabase[req.params.id].url, 
-                userID: userDatabase[req.session.user_id]
+                longURL: db.urlDatabase[req.params.id].url,
+                userID: db.userDatabase[req.session.user_id]
             }
-            res.render('urls_show', varParams)
+            res.render('urls/show', varParams)
         } else {
             res.statusCode = 403
             res.end("Access denied")
         }
     })
 
-
-    app.get('/urls', (req, res) => {
-        if (!req.session.user_id) {
-            res.statusCode = 403
-            res.redirect('/login')
+    /*
+    *   PUT /urls/{ID}
+    *   Submit the Edit form, and modify existing url entry
+    **/
+    app.put('/urls/:id', (req, res) => {
+        if (db.urlDatabase[req.params.id].userID === req.session.user_id) {
+            console.log(`Updating short url /u/${req.params.id} to ${req.body.longURL}`)
+            db.urlDatabase[req.params.id].url = req.body.longURL
+            res.redirect('/u/' + key)
         } else {
-            res.render('urls_index', {
-                urls: findUserURLS(req.session.user_id), 
-                userID: userDatabase[req.session.user_id]
-            })        
+            res.statusCode = 403
+            res.end("Access denied")
         }
-
     })
 
-    app.post('/urls/:shortURL/delete', (req, res) => {
-        if (urlDatabase[req.params.shortURL].userID === req.session.user_id) {
-            delete urlDatabase[req.params.shortURL]
+    /*
+    *   DELETE /urls/{ID}
+    *   Delete one url
+    **/
+    app.delete('/urls/:id', (req, res) => {
+        if (db.urlDatabase[req.params.id].userID === req.session.user_id) {
+            delete db.urlDatabase[req.params.id]
 
-            if (!urlDatabase[req.params.shortURL]) {
-                console.log(`${req.params.shortURL} deletion succeeded. Redirecting to index`)
+            if (!db.urlDatabase[req.params.id]) {
+                console.log(`${req.params.id} deletion succeeded. Redirecting to index`)
             }
 
             res.redirect('/urls')
@@ -66,14 +87,20 @@ module.exports = (app) => {
         }
     })
 
-    app.post('/urls/:id', (req, res) => {
-        if (urlDatabase[req.params.id].userID === req.session.user_id) {
-            console.log(`Updating short url /u/${req.params.id} to ${req.body.longURL}`)
-            urlDatabase[req.params.id].url = req.body.longURL
-            res.redirect('/u/' + key)
-        } else {
+    /*
+    *   GET /urls/
+    *   List urls index
+    **/
+    app.get('/urls', (req, res) => {
+        if (!req.session.user_id) {
             res.statusCode = 403
-            res.end("Access denied")
-        }    
+            res.redirect('/login')
+        } else {
+            res.render('urls/index', {
+                urls: tools.findUserURLS(db, req.session.user_id),
+                userID: db.userDatabase[req.session.user_id]
+            })
+        }
+
     })
 }
