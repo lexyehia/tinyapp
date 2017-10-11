@@ -1,10 +1,15 @@
 const tools  = require('../helpers/tools'),
-      urlDB  = require('./db').urlDatabase
+      urlDB  = require('./db').urlDatabase,
+      _      = require('lodash')
 
 class Url {
     constructor(user, longURL) {
+        if (!/^(f|ht)tps?:\/\//i.test(longURL)) {
+            longURL = "http://" + longURL
+        }
+
         this.id         = tools.generateRandomString(6)        
-        this.url        = tools.verifyHttp(longURL)
+        this.url        = longURL
         this.userID     = user
         this.redirects  = 0
         this.uniques    = []
@@ -23,6 +28,28 @@ class Url {
 
     destroy() {
         return delete urlDB[this.id]
+    }
+
+    trackVisit(session) {
+        this.redirects++
+        
+        if (session.unique_id) {
+            this.uniques.unshift([
+                session.unique_id, 
+                Date.now()
+            ])
+        } else {
+            const uniqueID = tools.generateRandomString(12)
+            session.unique_id = uniqueID
+            this.uniques.unshift([
+                uniqueID, 
+                Date.now()
+            ])
+        }
+    }
+
+    getTotalUniqueVisitors() {
+        return _.uniq(this.uniques.map(e => e[0])).length
     }
 
     static all() {

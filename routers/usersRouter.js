@@ -3,7 +3,6 @@ const tools  = require('../helpers/tools'),
       bcrypt = require('bcrypt'),
       User   = require('../db/user')
 
-
 module.exports = (app) => {
 
     /*

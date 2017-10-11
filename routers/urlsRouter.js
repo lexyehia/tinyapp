@@ -94,7 +94,6 @@ module.exports = (app) => {
             
                 res.render('urls/index', {
                     urls:          user.urls(),
-                    filterUniques: tools.filterUniques,
                     userID:        user
                 })
         } else {

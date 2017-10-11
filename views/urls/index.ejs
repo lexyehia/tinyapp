@@ -41,7 +41,7 @@
                 <td>localhost:8080/u/<b><%= key %></b></td>
                 <td><%= urls[key].url %></td>
                 <td><%= urls[key].redirects %></td>
-                <td><%= filterUniques(urls[key]) %></td>
+                <td><%= urls[key].getTotalUniqueVisitors() %></td>
                 <td><a href="/urls/<%= key %>">Edit!</a></td>
                 <td><form method="post" action="/urls/<%= key %>?_method=DELETE"><input type="submit" value="Delete!"></form></td>
             </tr>

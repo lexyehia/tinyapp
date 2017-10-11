@@ -5,9 +5,8 @@ const express       = require('express'),
       fs            = require('fs'),
       methodOver    = require('method-override'),
       cookieSession = require('cookie-session'),
-      db            = require('./db/db'),
-      tools         = require('./helpers/tools')
-
+      URL           = require('./db/url')
+      
 // Set port, either from environmental variable or default to 8080
 
 const PORT = process.env.PORT || 8080
@@ -34,11 +33,11 @@ fs.readdirSync('./routers/').forEach(file => {
 
 // The uri endpoint for shortened urls
 
-app.get('/u/:shortURL', (req, res) => {
-    const url = db.urlDatabase[req.params.shortURL]
+app.get('/u/:id', (req, res) => {
+    let url = URL.find(req.params.id)
+
     if (url) {
-        tools.trackUniqueUser(req, url)
-        url.redirects++
+        url.trackVisit(req.session)
         console.log(`Redirecting to ${url.url}`)
         res.redirect(url.url)
     } else {
