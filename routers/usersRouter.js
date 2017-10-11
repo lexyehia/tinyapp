@@ -37,8 +37,8 @@ module.exports = (app) => {
         console.log(`Creating new user with ID# ${id}`)
 
         db.userDatabase[id] = {
-            id: id,
-            email: req.body.email,
+            id:       id,
+            email:    req.body.email,
             password: bcrypt.hashSync(req.body.password, 10)
         }
 

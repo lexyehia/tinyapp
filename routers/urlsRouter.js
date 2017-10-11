@@ -24,10 +24,10 @@ module.exports = (app) => {
             const key = tools.generateRandomString(6)
             console.log(`Creating short url /u/${key} for ${req.body.longURL}`)
             db.urlDatabase[key] = {
-                url: tools.verifyHttp(req.body.longURL),
-                userID: req.session.user_id,
+                url:       tools.verifyHttp(req.body.longURL),
+                userID:    req.session.user_id,
                 redirects: 0,
-                uniques: []
+                uniques:   []
             }
             res.redirect('/u/' + key)
         } else {
@@ -44,8 +44,8 @@ module.exports = (app) => {
             let url = db.urlDatabase[req.params.id]
             res.render('urls/show', {
                 shortURL: req.params.id,
-                url: url,
-                userID: req.session.user_id
+                url:      url,
+                userID:   req.session.user_id
             })
         } else {
             res.status(403).send("Access denied")
@@ -92,9 +92,9 @@ module.exports = (app) => {
         tools.authenticateUser(req, res, '/login')
 
         res.render('urls/index', {
-            urls: tools.findUserURLS(db, req.session.user_id),
+            urls:          tools.findUserURLS(db, req.session.user_id),
             filterUniques: tools.filterUniques,
-            userID: db.userDatabase[req.session.user_id]
+            userID:        db.userDatabase[req.session.user_id]
         })
     })
 }
