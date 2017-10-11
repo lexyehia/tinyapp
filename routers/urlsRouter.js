@@ -21,17 +21,17 @@ module.exports = (app) => {
     **/
     app.post('/urls/new', (req, res) => {
         if (req.session.user_id) {
-            const key = tools.generateRandomString()
+            const key = tools.generateRandomString(6)
             console.log(`Creating short url /u/${key} for ${req.body.longURL}`)
             db.urlDatabase[key] = {
                 url: req.body.longURL,
                 userID: req.session.user_id,
-                redirects: 0
+                redirects: 0,
+                uniques: []
             }
             res.redirect('/u/' + key)
         } else {
-            res.statusCode = 403
-            res.send("Access denied")
+            res.status(403).send("Access denied")
         }
     })
 
@@ -41,15 +41,14 @@ module.exports = (app) => {
     **/
     app.get('/urls/:id', (req, res) => {
         if (db.urlDatabase[req.params.id].userID === req.session.user_id) {
-            const varParams = {
-                shortURL: req.params.id, 
-                longURL: db.urlDatabase[req.params.id].url,
-                userID: db.userDatabase[req.session.user_id]
-            }
-            res.render('urls/show', varParams)
+            let url = db.urlDatabase[req.params.id]
+            res.render('urls/show', {
+                shortURL: req.params.id,
+                url: url,
+                userID: req.session.user_id
+            })
         } else {
-            res.statusCode = 403
-            res.end("Access denied")
+            res.status(403).send("Access denied")
         }
     })
 
@@ -63,8 +62,7 @@ module.exports = (app) => {
             db.urlDatabase[req.params.id].url = req.body.longURL
             res.redirect('/u/' + key)
         } else {
-            res.statusCode = 403
-            res.end("Access denied")
+            res.status(403).send("Access denied")
         }
     })
 
@@ -82,8 +80,7 @@ module.exports = (app) => {
 
             res.redirect('/urls')
         } else {
-            res.statusCode = 403
-            res.end("Access denied")
+            res.status(403).send("Access denied")
         }
     })
 
@@ -93,11 +90,12 @@ module.exports = (app) => {
     **/
     app.get('/urls', (req, res) => {
         if (!req.session.user_id) {
-            res.statusCode = 403
-            res.redirect('/login')
+            res.redirect(403, '/login')
         } else {
+
             res.render('urls/index', {
                 urls: tools.findUserURLS(db, req.session.user_id),
+                filterUniques: tools.filterUniques,
                 userID: db.userDatabase[req.session.user_id]
             })
         }

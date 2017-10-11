@@ -6,16 +6,16 @@ const tools  = require('../helpers/tools'),
 module.exports = (app) => {
 
     /*
-    *   GET /urls/{ID}
-    *   Open the Edit form of a particular url
+    *   GET /register
+    *   Open form page to create a new user
     **/
     app.get('/register', (req, res) => {
-        res.render('users/new', {userID: db.userDatabase[req.session.user_id]})
+        res.render('users/new', {userID: null})
     })
 
     /*
-    *   GET /urls/{ID}
-    *   Open the Edit form of a particular url
+    *   POST /register
+    *   Submit registration to create new user, redirect to /urls
     **/
     app.post('/register', (req, res) => {
         if (!req.body.email || !req.body.password) {
@@ -32,7 +32,7 @@ module.exports = (app) => {
             }
         }
 
-        const id = tools.generateRandomString()
+        const id = tools.generateRandomString(6)
 
         console.log(`Creating new user with ID# ${id}`)
 
@@ -47,23 +47,22 @@ module.exports = (app) => {
     })
 
     /*
-    *   GET /urls/{ID}
-    *   Open the Edit form of a particular url
+    *   GET /login
+    *   Request login page
     **/
     app.get('/login', (req, res) => {
-        res.render('users/login', {userID: db.userDatabase[req.session.user_id]})
+        res.render('users/login', {userID: null})
     })
 
     /*
-    *   GET /urls/{ID}
-    *   Open the Edit form of a particular url
+    *   POST /login
+    *   Create a new user session
     **/
     app.post('/login', (req, res) => {
         let currentUser = null
 
         if(!req.body.email || !req.body.password) {
-            res.statusCode = 403
-            res.send("Invalid credentials inputted")
+            res.status(403).send("Invalid credentials inputted")
         }
 
         for (let key in db.userDatabase) {
@@ -80,18 +79,17 @@ module.exports = (app) => {
             res.redirect('/urls')            
         } else {
             console.log("User not found!")
-            res.statusCode = 403
-            res.send("Invalid credentials inputted")
+            res.status(403).send("Invalid credentials inputted")
         }
     })
 
     /*
-    *   GET /urls/{ID}
-    *   Open the Edit form of a particular url
+    *   DELETE /logout
+    *   Delete current user's session
     **/
     app.delete('/logout', (req, res) => {
         console.log(`Logging out ${req.session.user_id}`)
-        req.session = null
+        req.session.user_id = null
         res.redirect('/urls')
     })
 }

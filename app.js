@@ -5,7 +5,8 @@ const express       = require('express'),
       fs            = require('fs'),
       methodOver    = require('method-override'),
       cookieSession = require('cookie-session'),
-      db            = require('./db/db')
+      db            = require('./db/db'),
+      tools         = require('./helpers/tools')
 
 // Set port, either from environmental variable or default to 8080
 
@@ -36,8 +37,9 @@ fs.readdirSync('./routers/').forEach(file => {
 app.get('/u/:shortURL', (req, res) => {
     const url = db.urlDatabase[req.params.shortURL]
     if (url) {
-        console.log(`Redirecting to ${url.url}`)
+        tools.trackUniqueUser(req, url)
         url.redirects++
+        console.log(`Redirecting to ${url.url}`)
         res.redirect(url.url)
     } else {
         res.redirect('/urls')

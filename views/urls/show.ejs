@@ -3,13 +3,45 @@
     <head>
 
         <title>TinyApp</title>
+        <style>
+            table {
+                color: #333;
+                font-family: Helvetica, Arial, sans-serif;
+                width: 640px;
+                border-collapse: collapse;
+                border-spacing: 0;
+            }
+            td, th {
+                border: 1px solid #CCC;
+                height: 30px;
+            }
+            th {
+                background: #F3F3F3;
+                font-weight: bold;
+            }
+            td {
+                background: #FAFAFA;
+                text-align: center;
+            }
+        </style>
     </head>
     <body style="font-size:20px; padding:50px;">
         <%- include ../partials/_header %>
-        <form action="/urls/<%= shortURL %>?_method=PUT" method="POST" style="margin:150px;">
+        <form action="/urls/<%= url.url %>?_method=PUT" method="POST" style="margin:150px;">
             <h2><label for="longURL">Update existing URL: <%= shortURL %></label></h2>
-            <input id="longURL" type="text" name="longURL" value="<%= longURL %>" style="width: 300px">
+            <input id="longURL" type="text" name="longURL" value="<%= url.url %>" style="width: 300px">
             <input type="submit" value="Submit">
         </form>
+        <br><br>
+        <table margin=4 align="center">
+            <th>Visitor ID</th>
+            <th>Timestamp</th>
+            <% for (visit of url.uniques) { %>
+            <tr>
+                <td><%= visit[0] %></td>
+                <td><%= new Date(visit[1]).toLocaleString() %></td>
+            </tr>
+            <% } %>
+        </table>
     </body>
 </html>
