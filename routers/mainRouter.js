@@ -14,7 +14,7 @@ module.exports = (app) => {
             console.log(`Redirecting to ${url.url}`)
             res.redirect(url.url)
         } else {
-            res.redirect('/urls')
+            res.redirect('/urls', {alert: "Cannot find that URL"})
         }
     })
 

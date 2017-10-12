@@ -23,7 +23,7 @@ module.exports = (app) => {
             req.session.user_id = user.id
             res.redirect('/urls')
         } else {
-            res.send("Invalid email or password")
+            res.render("users/new", {alert: "Invalid email or password"})
         }
     })
 
@@ -48,7 +48,8 @@ module.exports = (app) => {
             res.redirect('/urls')            
         } else {
             console.log("User not found!")
-            res.status(403).send("Invalid credentials inputted")
+            //res.status(403).send("Invalid credentials inputted")
+            res.status(403).render('users/login', {alert: "Invalid credentials inputted"})
         }
     })
 
@@ -62,6 +63,7 @@ module.exports = (app) => {
             req.session.user_id = null
         }
 
-        res.redirect('/urls')
+        // res.redirect('/urls')
+        res.render('users/login', {alert: "Logged out successfully. Please log back in."})
     })
 }

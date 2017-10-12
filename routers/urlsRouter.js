@@ -27,7 +27,8 @@ module.exports = (app) => {
             console.log(`Creating short url /u/${url.id} for ${url.url}`)
             res.redirect('/u/' + url.id)
         } else {
-            res.status(403).send("Access denied")
+            // res.status(403).send("Access denied")
+            res.status(403).render('urls/new', {alert: 'Access denied'})            
         }
     })
 
@@ -44,7 +45,8 @@ module.exports = (app) => {
                 user: User.find(req.session.user_id)
             })
         } else {
-            res.status(403).send("Access denied")
+            // res.status(403).send("Access denied")
+            res.status(403).render('/urls', {alert: 'Access denied'})            
         }
     })
 
@@ -62,7 +64,9 @@ module.exports = (app) => {
 
             res.redirect('/u/' + url.id)
         } else {
-            res.status(403).send("Access denied")
+             // res.status(403).send("Access denied")
+            res.status(403).render('urls/show', {alert: 'Access denied', url: url,
+            user: User.find(req.session.user_id)})
         }
     })
 
@@ -96,7 +100,8 @@ module.exports = (app) => {
             res.render('urls/index', { user: user, urls: urls })
 
         } else {
-            res.redirect(403, '/login')
+            // res.redirect(403, '/login')
+            res.status(403).render('users/login')
         }
     })
 }

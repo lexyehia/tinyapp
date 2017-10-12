@@ -14,4 +14,7 @@
         <% } %>
     </ul>
 </nav>
+<% if (typeof alert !== 'undefined') { %>
+<div class="alert alert-danger" role="alert" id="alert"><%= alert %></div>
+<% } %>
 </header>

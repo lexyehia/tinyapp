@@ -15,6 +15,7 @@ class Model {
      * @memberof Model
      */
     static connect() {
+        // TODO: Check whether .json file exists, otherwise create it
         return JSON.parse(fs.readFileSync(dbPath))
     }
 
