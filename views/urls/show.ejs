@@ -1,30 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
+    <%- include ../partials/_head %>
 
-        <title>TinyApp</title>
-        <style>
-            table {
-                color: #333;
-                font-family: Helvetica, Arial, sans-serif;
-                width: 640px;
-                border-collapse: collapse;
-                border-spacing: 0;
-            }
-            td, th {
-                border: 1px solid #CCC;
-                height: 30px;
-            }
-            th {
-                background: #F3F3F3;
-                font-weight: bold;
-            }
-            td {
-                background: #FAFAFA;
-                text-align: center;
-            }
-        </style>
-    </head>
     <body style="font-size:20px; padding:50px;">
         <%- include ../partials/_header %>
         <form action="/urls/<%= url.id %>?_method=PUT" method="POST" style="margin:150px;">

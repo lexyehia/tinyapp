@@ -1,53 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
+    <%- include ../partials/_head %>
 
-        <title>TinyApp</title>
-
-        <style>
-            table {
-                color: #333;
-                font-family: Helvetica, Arial, sans-serif;
-                width: 840px;
-                border-collapse: collapse;
-                border-spacing: 0;
-            }
-            td, th {
-                border: 1px solid #CCC;
-                height: 30px;
-            }
-            th {
-                background: #F3F3F3;
-                font-weight: bold;
-            }
-            td {
-                background: #FAFAFA;
-                text-align: center;
-            }
-        </style>
-    </head>
     <body>
         <%- include ../partials/_header %>
         <div align="center">
-        <table margin=4>
+        <table margin=4 style="margin-bottom:1cm;">
             <th>Short URL</th>
             <th>Original URL</th>
             <th>Redirects</th>
             <th>Unique Visits</th>
-            <th>Edit?</th>
-            <th>Delete?</th>
+            <th></th>
+            <th></th>
         <% for (url of urls) { %>
             <tr>
                 <td>localhost:8080/u/<b><%= url.id %></b></td>
                 <td><%= url.url %></td>
                 <td><%= url.redirects %></td>
                 <td><%= url.getTotalUniqueVisitors() %></td>
-                <td><a href="/urls/<%= url.id %>">Edit!</a></td>
-                <td><form method="post" action="/urls/<%= url.id %>?_method=DELETE"><input type="submit" value="Delete!"></form></td>
+                <td><a href="/urls/<%= url.id %>" class="btn btn-warning btn-sm">Edit</a></td>
+                <td><form method="post" action="/urls/<%= url.id %>?_method=DELETE"><input type="submit" value="Delete" class="btn btn-danger btn-sm"></form></td>
             </tr>
         <% } %>
         </table>
-        <p><a href="/urls/new">New Short URL!</a></p>
+        <p><a href="/urls/new" class="btn btn-success btn-lg">Create Short URL!</a></p>
         </div>
     </body>
 </html>
