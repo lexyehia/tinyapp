@@ -4,7 +4,8 @@ const express       = require('express'),
       morgan        = require('morgan'),
       fs            = require('fs'),
       methodOver    = require('method-override'),
-      cookieSession = require('cookie-session')
+      cookieSession = require('cookie-session'),
+      DB            = require('./db/model')
 
 // Set port, either from environmental variable or default to 8080
 
@@ -21,6 +22,7 @@ app.use(cookieSession({
     keys: ['Key1', 'Key2'],
     maxAge: 24 * 60 * 60 * 1000 
 }))
+
 
 // Read the Routers subdirectory and require each file there
 // then pass the app object to those routers, for each resource type

@@ -1,13 +1,10 @@
 const tools  = require('../helpers/tools'),
-      Model  = require('./model'),
+      Model  = require('../db/model'),
       _      = require('lodash')
 
 class URL extends Model {
 
     static create(user, longURL) {
-        if (!/^(f|ht)tps?:\/\//i.test(longURL)) {
-            longURL = "http://" + longURL
-        }
 
         let url       = new URL()
         url.url       = longURL
@@ -20,6 +17,13 @@ class URL extends Model {
         } else {
             return false
         }
+    }
+
+    save() {
+        if (!/^(f|ht)tps?:\/\//i.test(this.url)) {
+            this.url = "http://" + this.url
+        }
+        super.save()
     }
 
     trackVisit(session) {
@@ -45,6 +49,7 @@ class URL extends Model {
     getTotalUniqueVisitors() {
         return _.uniq(this.uniques.map(e => e[0])).length
     }
+
 }
 
 module.exports = URL

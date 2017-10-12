@@ -1,4 +1,4 @@
-const URL  = require('../db/url')
+const URL  = require('../models/url')
 
 module.exports = (app) => {
 

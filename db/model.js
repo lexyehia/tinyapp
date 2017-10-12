@@ -1,23 +1,10 @@
-const fs     = require('fs'),
-      _      = require('lodash'),
-      path   = require('path'),
-      tools  = require('../helpers/tools')
-
-const dbPath = path.resolve(__dirname, "db.json")
+const fs = require('fs');
+const _ = require('lodash');
+const tools = require('../helpers/tools');
+const DBContext = require('./dbconfig');
+const DB = DBContext.data;
 
 class Model {
-    
-    /**
-     * Connect to database by reading the .json file and parsing it into an object
-     * 
-     * @static
-     * @returns {object}
-     * @memberof Model
-     */
-    static connect() {
-        // TODO: Check whether .json file exists, otherwise create it
-        return JSON.parse(fs.readFileSync(dbPath))
-    }
 
     // TODO: Future use
     /**
@@ -29,7 +16,7 @@ class Model {
      */
     static all() {
         console.log("FETCHING ALL OBJECTS FROM DB " + this._getDBName().toUpperCase())
-        return this.connect()[this._getDBName()]
+        return DB[this._getDBName()]
     }
 
     /**
@@ -42,8 +29,8 @@ class Model {
      * @memberof Model
      */
     static find(query) {
-        let db    = this.connect()
-        let table = db[this._getDBName()]
+        //db   = db || new DBContext()
+        let table = DB[this._getDBName()]
         let obj   = null
 
         if (typeof query === 'string' || typeof query === 'number') {
@@ -73,8 +60,8 @@ class Model {
      * @memberof Model
      */
     static findAll(query) {
-        let db    = this.connect()
-        let table = db[this._getDBName()]
+        //this.db   = this.db || new DBContext()
+        let table = DB[this._getDBName()]
         let arr   = _.filter(table, query)
 
         arr = arr.map(e => _.assign(new this(), e))
@@ -92,13 +79,13 @@ class Model {
      * @memberof Model
      */
     static destroy(id) {
-        let db    = this.connect()
-        let table = db[this._getDBName()]
+        //this.db   = this.db || new DBContext()
+        let table = DB[this._getDBName()]
         let obj   = table.filter(e => e.id === id)[0]
 
         if (obj) {
-            db[this._getDBName()] = table.filter(e => e !== obj)
-            fs.writeFileSync(dbPath, JSON.stringify(db))
+            DB[this._getDBName()] = table.filter(e => e !== obj)
+            fs.writeFileSync(DBContext.dbPath, JSON.stringify(DB))
             console.log("DELETING OBJECT " + obj.id + " FROM DB " + this._getDBName().toUpperCase())
             return true
         } else {
@@ -115,8 +102,8 @@ class Model {
      * @memberof Model
      */
     save() {
-        let db    = this.constructor.connect()
-        let table = db[this._getDBName()]
+        //this.db   = this.db || new DBContext()
+        let table = DB[this._getDBName()]
         let obj   = table.filter(e => e.id === this.id)[0]
 
         if (obj) {
@@ -127,7 +114,7 @@ class Model {
         }
 
         try {
-            fs.writeFileSync(dbPath, JSON.stringify(db))
+            fs.writeFileSync(DBContext.dbPath, JSON.stringify(DB))
             console.log("SAVING OBJECT " + this.id + " IN DB " + this._getDBName().toUpperCase())
             return this
         } catch (err) {
@@ -143,8 +130,8 @@ class Model {
      * @memberof Model
      */
     retrieveDBCopy() {
-        let db    = this.constructor.connect()
-        let table = db[this._getDBName()]
+       // this.db   = this.db || new DBContext()
+        let table = DB[this._getDBName()]
         let obj   = table.filter(e => e.id === this.id)[0]
 
         if (obj) {
@@ -162,14 +149,14 @@ class Model {
      * @memberof Model
      */
     destroy() {
-        let db    = this.constructor.connect()
-        let table = db[this._getDBName()]
+       // this.db   = this.db || new DBContext()
+        let table = DB[this._getDBName()]
         let obj   = table.filter(e => e.id === this.id)[0]
 
         if (obj) {
-            db[this._getDBName()] = table.filter(e => e !== obj)
+            DB[this._getDBName()] = table.filter(e => e !== obj)
             console.log("DELETING OBJECT " + obj.id + " FROM DB " + this._getDBName().toUpperCase())
-            fs.writeFileSync(dbPath, JSON.stringify(db))            
+            fs.writeFileSync(DBContext.dbPath, JSON.stringify(DB))
             return true
         } else {
             return false

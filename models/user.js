@@ -1,6 +1,6 @@
 const tools  = require('../helpers/tools'),
       URL    = require('./url'),
-      Model  = require('./model'),
+      Model  = require('../db/model'),
       bcrypt = require('bcrypt')
 
 class User extends Model {

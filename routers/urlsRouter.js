@@ -1,5 +1,5 @@
-const URL  = require('../db/url'),
-      User = require('../db/user')
+const URL  = require('../models/url'),
+      User = require('../models/user')
 
 module.exports = (app) => {
 
