@@ -2,13 +2,15 @@
 <html lang="en">
     <%- include ../partials/_head %>
 
-    <body style="font-size:20px; padding:50px;">
+    <body>
         <%- include ../partials/_header %>
+        <div align=center class="form-group">
         <form action="/urls/<%= url.id %>?_method=PUT" method="POST" style="margin:150px;">
-            <h2><label for="longURL">Update existing URL: <%= url.id %></label></h2>
-            <input id="longURL" type="text" name="longURL" value="<%= url.url %>" style="width: 300px">
-            <input type="submit" value="Submit">
+            <h2><label for="longURL">Change .../u/<b><%= url.id %></b> to</label></h2>
+            <input class="form-control" id="longURL" type="text" name="longURL" value="<%= url.url %>"><br>
+            <input type="submit" value="Submit" class="btn btn-success">
         </form>
+        </div>
         <br><br>
         <table margin=4 align="center">
             <th>Visitor ID</th>

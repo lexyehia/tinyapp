@@ -2,12 +2,16 @@
 <html lang="en">
     <%- include ../partials/_head %>
 
-    <body style="font-size:20px; padding:50px;">
+    <body>
         <%- include ../partials/_header %>
+        <div align="center">
         <form action="/urls/new" method="POST" style="margin:150px;">
-            <label for="longURL">Enter a URL:</label>
-            <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
-            <input type="submit" value="Submit">
+        <div class="input-group">
+        <span class="input-group-addon" id="basic-addon1">http://</span>
+        <input type="text" class="form-control" name="longURL" aria-label="longURL" aria-describedby="basic-addon1">
+        </div></br>
+        <input type="submit" value="Submit" class="btn btn-lg btn-success">
         </form>
+        </div>
     </body>
 </html>

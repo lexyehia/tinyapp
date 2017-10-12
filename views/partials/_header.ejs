@@ -1,8 +1,17 @@
 <header>
-    <% if (typeof user !== 'undefined') { %>
-    <p><form action="/logout?_method=DELETE" method="post">Logged in as <%= user.email %>. <input type="submit" value="Logout" class="btn btn-outline-info btn-sm"></form></p>
-    <% } else { %>
-    <a href="/login">Login</a> | <a href="/register">Register</a>
-    <% } %>
-    <br /><br />
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <ul class="nav navbar-nav mr-auto">
+        <% if (typeof user !== 'undefined') { %>
+        <li class="nav-item"><span class="navbar-text">Logged in as <%= user.email %> </span></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+        <li class="nav-item"><form action="/logout?_method=DELETE" method="post"><input type="submit" value="Logout" class="btn btn-outline-info my-2 my-sm-0"></form></li>
+        
+        <% } else { %>
+        <li class="nav-item"><a class="nav-link" href="/login">Login</a></li> 
+        <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
+
+        <% } %>
+    </ul>
+</nav>
 </header>

@@ -8,8 +8,10 @@ module.exports = (app) => {
     *   Open new url form
     **/
     app.get('/urls/new', (req, res) => {
-        if (User.verifySession(req.session)) {
-            res.render('urls/new', {userID: User.find(req.session.user_id)})
+        let user = User.verifySession(req.session)
+
+        if (user) {
+            res.render('urls/new', {user: user})
         } else {
             res.redirect('/login')
         }
