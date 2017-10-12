@@ -4,9 +4,8 @@ const express       = require('express'),
       morgan        = require('morgan'),
       fs            = require('fs'),
       methodOver    = require('method-override'),
-      cookieSession = require('cookie-session'),
-      URL           = require('./db/url')
-      
+      cookieSession = require('cookie-session')
+
 // Set port, either from environmental variable or default to 8080
 
 const PORT = process.env.PORT || 8080
@@ -24,7 +23,7 @@ app.use(cookieSession({
 }))
 
 // Read the Routers subdirectory and require each file there
-// then pass the app object to them, for each resource type
+// then pass the app object to those routers, for each resource type
 
 fs.readdirSync('./routers/').forEach(file => {
     const name = file.substr(0, file.indexOf('.'))

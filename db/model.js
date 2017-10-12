@@ -1,7 +1,7 @@
-const fs    = require('fs'),
-      _     = require('lodash'),
-      path  = require('path'),
-      tools = require('../helpers/tools')
+const fs     = require('fs'),
+      _      = require('lodash'),
+      path   = require('path'),
+      tools  = require('../helpers/tools')
 
 const dbPath = path.resolve(__dirname, "db.json")
 
@@ -10,6 +10,7 @@ class Model {
         return JSON.parse(fs.readFileSync(dbPath))
     }
 
+    // Future use
     static all() {
         console.log("FETCHING ALL OBJECTS FROM DB " + this._getDBName().toUpperCase())
         return this.connect()[this._getDBName()]
