@@ -5,18 +5,24 @@ const tools  = require('../helpers/tools'),
 
 class Url extends Model {
     
-    constructor(user, longURL) {
+    constructor() {
+        super()
+        return this
+    }
+
+    static create(user, longURL) {
         if (!/^(f|ht)tps?:\/\//i.test(longURL)) {
             longURL = "http://" + longURL
         }
 
-        this.url        = longURL
-        this.userID     = user
-        this.redirects  = 0
-        this.uniques    = []
+        let url = new Url()
+        url.url        = longURL
+        url.userID     = user
+        url.redirects  = 0
+        url.uniques    = []
 
-        if (this.save()) {
-            return this
+        if (url.save()) {
+            return url
         } else {
             return false
         }

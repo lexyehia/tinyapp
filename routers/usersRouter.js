@@ -1,7 +1,4 @@
-const tools  = require('../helpers/tools'),
-      db     = require('../db/db'),
-      bcrypt = require('bcrypt'),
-      User   = require('../db/user')
+const User   = require('../db/user')
 
 module.exports = (app) => {
 
@@ -19,7 +16,7 @@ module.exports = (app) => {
     **/
     app.post('/register', (req, res) => {
 
-        let user = new User(req.body.email, req.body.password)
+        let user = User.create(req.body.email, req.body.password)
 
         if (user) {
             console.log(`Creating new user with ID# ${user.id}`)            

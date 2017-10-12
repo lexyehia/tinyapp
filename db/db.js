@@ -51,7 +51,7 @@ class Model {
         }
 
         if (obj) {          
-            return obj
+            return _.assign(new this(), obj)
         } else {
             return null
         }

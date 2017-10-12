@@ -21,7 +21,7 @@ module.exports = (app) => {
     **/
     app.post('/urls/new', (req, res) => {
         if (User.verifySession(req.session)) {
-            let url = new URL(req.session.user_id, req.body.longURL)
+            let url = URL.create(req.session.user_id, req.body.longURL)
             console.log(`Creating short url /u/${url.id} for ${url.url}`)
             res.redirect('/u/' + url.id)
         } else {
@@ -87,8 +87,9 @@ module.exports = (app) => {
     *   List urls index
     **/
     app.get('/urls', (req, res) => {
-        if (User.verifySession(req.session)) {
-            let user = User.find(req.session.user_id)
+        let user = User.find(req.session.user_id)
+
+        if (user) {
             res.render('urls/index', { user: user, urls: user.urls() })
 
         } else {
