@@ -31,20 +31,6 @@ fs.readdirSync('./routers/').forEach(file => {
     require('./routers/' + name)(app)
 })
 
-// The uri endpoint for shortened urls
-
-app.get('/u/:id', (req, res) => {
-    let url = URL.find(req.params.id)
-
-    if (url) {
-        url.trackVisit(req.session)
-        console.log(`Redirecting to ${url.url}`)
-        res.redirect(url.url)
-    } else {
-        res.redirect('/urls')
-    }
-})
-
 // Start server
 
 app.listen(PORT, () => {
