@@ -87,7 +87,7 @@ module.exports = (app) => {
     *   List urls index
     **/
     app.get('/urls', (req, res) => {
-        let user = User.find(req.session.user_id)
+        let user = User.verifySession(req.session)
 
         if (user) {
             let urls = user.urls()

@@ -60,9 +60,8 @@ module.exports = (app) => {
         if (User.verifySession(req.session)) {
             console.log(`Logging out ${req.session.user_id}`)
             req.session.user_id = null
-            res.redirect('/urls')
-        } else {
-            res.redirecT('/urls')
         }
+
+        res.redirect('/urls')
     })
 }

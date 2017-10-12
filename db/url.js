@@ -1,16 +1,15 @@
 const tools  = require('../helpers/tools'),
-      urlDB  = require('./db').urlDatabase,
-      Model  = require('./db').Model,
+      Model  = require('./model'),
       _      = require('lodash')
 
-class Url extends Model {
+class URL extends Model {
 
     static create(user, longURL) {
         if (!/^(f|ht)tps?:\/\//i.test(longURL)) {
             longURL = "http://" + longURL
         }
 
-        let url = new Url()
+        let url = new URL()
         url.url        = longURL
         url.userID     = user
         url.redirects  = 0
@@ -48,4 +47,4 @@ class Url extends Model {
     }
 }
 
-module.exports = Url
+module.exports = URL

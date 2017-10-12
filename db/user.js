@@ -1,8 +1,6 @@
 const tools  = require('../helpers/tools'),
-      userDB = require('./db').userDatabase,
-      urlDB  = require('./db').urlDatabase,
       URL    = require('./url'),
-      Model  = require('./db').Model,      
+      Model  = require('./model'),
       bcrypt = require('bcrypt')
 
 class User extends Model {
@@ -23,24 +21,6 @@ class User extends Model {
         }
     }
 
-    update() {
-        const _user = this.retrieveDBCopy()
-        
-        if (this.password !== _user.password) {
-            this.password = bcrypt.hashSync(this.password, 10)
-        }
-
-        if (this.save()) {
-            return this            
-        } else {
-            return false
-        }
-    }
-
-    urls() {
-        return URL.findAll({userID: this.id})
-    }
-
     static verifyPassword(email, password) {
         if (!email || !password) return false
 
@@ -54,17 +34,36 @@ class User extends Model {
     }
 
     static verifySession(session) {
-        
+
         if (!session.user_id) {
             return false
         } else {
             let user = this.find(session.user_id)
             if (user) {
-                return session.user_id
+                return user
             } else {
                 session.user_id = null
                 return false
-            }       
+            }
+        }
+    }
+
+    urls() {
+        return URL.findAll({userID: this.id})
+    }
+
+    // Future use
+    update() {
+        const _user = this.retrieveDBCopy()
+        
+        if (this.password !== _user.password) {
+            this.password = bcrypt.hashSync(this.password, 10)
+        }
+
+        if (this.save()) {
+            return this            
+        } else {
+            return false
         }
     }
 }

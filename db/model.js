@@ -1,7 +1,7 @@
-const fs = require('fs');
-const _  = require('lodash');
-const tools = require('../helpers/tools')
-const path = require('path')
+const fs    = require('fs'),
+      _     = require('lodash'),
+      path  = require('path'),
+      tools = require('../helpers/tools')
 
 const dbPath = path.resolve(__dirname, "db.json")
 
@@ -11,6 +11,7 @@ class Model {
     }
 
     static all() {
+        console.log("FETCHING ALL OBJECTS FROM DB " + this._getDBName().toUpperCase())
         return this.connect()[this._getDBName()]
     }
 
@@ -21,8 +22,10 @@ class Model {
 
         if (typeof query === 'string' || typeof query === 'number') {
             obj = table.filter(e => e.id === query)[0]
+            console.log("FINDING OBJECT BY ID# " + query + " FROM DB " + this._getDBName().toUpperCase())
         } else if (typeof query === 'object') {
             obj = _.find(table, query)
+            console.log("FINDING OBJECT BY QUERY " + JSON.stringify(query) + " FROM DB " + this._getDBName().toUpperCase())
         } else {
             throw Error("Improper query format")
         }
@@ -40,6 +43,7 @@ class Model {
         let arr   = _.filter(table, query)
 
         arr = arr.map(e => _.assign(new this(), e))
+        console.log("FINDING ALL OBJECTS WITH QUERY: " + JSON.stringify(query) + " FROM DB " + this._getDBName().toUpperCase())
         return arr
     }
 
@@ -50,7 +54,8 @@ class Model {
 
         if (obj) {
             db[this._getDBName()] = table.filter(e => e !== obj)
-            fs.writeFileSync(dbPath, JSON.stringify(db))            
+            fs.writeFileSync(dbPath, JSON.stringify(db))
+            console.log("DELETING OBJECT " + obj.id + " FROM DB " + this._getDBName().toUpperCase())
             return true
         } else {
             return false
@@ -71,6 +76,7 @@ class Model {
 
         try {
             fs.writeFileSync(dbPath, JSON.stringify(db))
+            console.log("SAVING OBJECT " + this.id + " IN DB " + this._getDBName().toUpperCase())
             return this
         } catch (err) {
             return null
@@ -82,7 +88,8 @@ class Model {
         let table = db[this._getDBName()]
         let obj   = table.filter(e => e.id === this.id)[0]
 
-        if (obj) {          
+        if (obj) {
+            console.log("FETCHING COPY OF ITEM " + obj.id + " FROM DB " + this._getDBName().toUpperCase())
             return obj
         } else {
             return null
@@ -96,12 +103,15 @@ class Model {
 
         if (obj) {
             db[this._getDBName()] = table.filter(e => e !== obj)
+            console.log("DELETING OBJECT " + obj.id + " FROM DB " + this._getDBName().toUpperCase())
             fs.writeFileSync(dbPath, JSON.stringify(db))            
             return true
         } else {
             return false
         }
     }
+
+    // PRIVATE METHODS
 
     static _getDBName() {
         return this.name.toLowerCase() + "s" + "DB"
@@ -112,6 +122,4 @@ class Model {
     }
 }
 
-module.exports = {
-    Model: Model
-}
+module.exports = Model
