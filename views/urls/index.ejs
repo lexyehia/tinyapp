@@ -36,14 +36,14 @@
             <th>Unique Visits</th>
             <th>Edit?</th>
             <th>Delete?</th>
-        <% for (key in urls) { %>
+        <% for (url of urls) { %>
             <tr>
-                <td>localhost:8080/u/<b><%= key %></b></td>
-                <td><%= urls[key].url %></td>
-                <td><%= urls[key].redirects %></td>
-                <td><%= urls[key].getTotalUniqueVisitors() %></td>
-                <td><a href="/urls/<%= key %>">Edit!</a></td>
-                <td><form method="post" action="/urls/<%= key %>?_method=DELETE"><input type="submit" value="Delete!"></form></td>
+                <td>localhost:8080/u/<b><%= url.id %></b></td>
+                <td><%= url.url %></td>
+                <td><%= url.redirects %></td>
+                <td><%= url.getTotalUniqueVisitors() %></td>
+                <td><a href="/urls/<%= url.id %>">Edit!</a></td>
+                <td><form method="post" action="/urls/<%= url.id %>?_method=DELETE"><input type="submit" value="Delete!"></form></td>
             </tr>
         <% } %>
         </table>

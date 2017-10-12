@@ -6,10 +6,6 @@ const tools  = require('../helpers/tools'),
       bcrypt = require('bcrypt')
 
 class User extends Model {
-    constructor() {
-        super()
-        return this
-    }
 
     static create(email, password) {
         if (!email || !password) return false

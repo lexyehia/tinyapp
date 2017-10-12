@@ -56,7 +56,7 @@ module.exports = (app) => {
         if (User.verifySession(req.session) && url.userID === req.session.user_id) {
             console.log(`Updating short url /u/${url.id} to ${req.body.longURL}`)
             url.url = req.body.longURL
-            url.update()
+            url.save()
 
             res.redirect('/u/' + url.id)
         } else {
@@ -90,7 +90,8 @@ module.exports = (app) => {
         let user = User.find(req.session.user_id)
 
         if (user) {
-            res.render('urls/index', { user: user, urls: user.urls() })
+            let urls = user.urls()
+            res.render('urls/index', { user: user, urls: urls })
 
         } else {
             res.redirect(403, '/login')

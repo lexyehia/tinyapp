@@ -4,11 +4,6 @@ const tools  = require('../helpers/tools'),
       _      = require('lodash')
 
 class Url extends Model {
-    
-    constructor() {
-        super()
-        return this
-    }
 
     static create(user, longURL) {
         if (!/^(f|ht)tps?:\/\//i.test(longURL)) {
