@@ -43,7 +43,7 @@ module.exports = (app) => {
     *   Create a new user session
     **/
     app.post('/login', (req, res) => {
-        let user = User.retrieve(req.body.email, req.body.password)
+        let user = User.verifyPassword(req.body.email, req.body.password)
 
         if (user) {
             console.log(`Logging in ${user.id}`)        

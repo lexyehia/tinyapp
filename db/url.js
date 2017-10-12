@@ -1,33 +1,25 @@
 const tools  = require('../helpers/tools'),
       urlDB  = require('./db').urlDatabase,
+      Model  = require('./db').Model,
       _      = require('lodash')
 
-class Url {
+class Url extends Model {
+    
     constructor(user, longURL) {
         if (!/^(f|ht)tps?:\/\//i.test(longURL)) {
             longURL = "http://" + longURL
         }
 
-        this.id         = tools.generateRandomString(6)        
         this.url        = longURL
         this.userID     = user
         this.redirects  = 0
         this.uniques    = []
-        urlDB[this.id]  = this
-        return urlDB[this.id]
-    }
 
-    update() {
-        let url       = urlDB[this.id]
-        url.url       = this.url
-        url.userID    = this.userID
-        url.redirects = this.redirects
-        url.uniques   = this.uniques
-        return url
-    }
-
-    destroy() {
-        return delete urlDB[this.id]
+        if (this.save()) {
+            return this
+        } else {
+            return false
+        }
     }
 
     trackVisit(session) {
@@ -46,22 +38,12 @@ class Url {
                 Date.now()
             ])
         }
+
+        this.save()
     }
 
     getTotalUniqueVisitors() {
         return _.uniq(this.uniques.map(e => e[0])).length
-    }
-
-    static all() {
-        return urlDB
-    }
-
-    static find(id) {
-        return urlDB[id]
-    }
-
-    static destroy(id) {
-        return delete urlDB[id]
     }
 }
 
