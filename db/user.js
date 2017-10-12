@@ -52,7 +52,7 @@ class User extends Model {
         return URL.findAll({userID: this.id})
     }
 
-    // Future use
+    // TODO: Future use
     update() {
         const _user = this.retrieveDBCopy()
         

@@ -17,4 +17,8 @@ module.exports = (app) => {
             res.redirect('/urls')
         }
     })
+
+    app.get('/', (req, res) => {
+        res.redirect('/urls')
+    })
 }
