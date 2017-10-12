@@ -9,11 +9,11 @@ class URL extends Model {
             longURL = "http://" + longURL
         }
 
-        let url = new URL()
-        url.url        = longURL
-        url.userID     = user
-        url.redirects  = 0
-        url.uniques    = []
+        let url       = new URL()
+        url.url       = longURL
+        url.userID    = user
+        url.redirects = 0
+        url.uniques   = []
 
         if (url.save()) {
             return url
@@ -31,7 +31,7 @@ class URL extends Model {
                 Date.now()
             ])
         } else {
-            const uniqueID = tools.generateRandomString(12)
+            const uniqueID    = tools.generateRandomString(12)
             session.unique_id = uniqueID
             this.uniques.unshift([
                 uniqueID, 

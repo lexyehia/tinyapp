@@ -9,10 +9,10 @@ class User extends Model {
         if (!email || !password) return false
         if (User.find({email: email})) return false
 
-        let user = new User()
-        user.id         = tools.generateRandomString(6)
-        user.email      = email
-        user.password   = bcrypt.hashSync(password, 10)
+        let user      = new User()
+        user.id       = tools.generateRandomString(6)
+        user.email    = email
+        user.password = bcrypt.hashSync(password, 10)
 
         if (user.save()) {
             return user
