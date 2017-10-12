@@ -5,7 +5,9 @@
     <body>
         <%- include ../partials/_header %>
         <div align="center">
-        <table margin=4 style="margin-bottom:1cm;">
+        <% if (urls.length > 0) { %>
+        <span style="width: 850px">
+        <table style="margin-bottom:1cm; margin-top:2cm; width: auto !important;" class="table">
             <th>Short URL</th>
             <th>Original URL</th>
             <th>Redirects</th>
@@ -23,6 +25,8 @@
             </tr>
         <% } %>
         </table>
+        </span>
+        <% } %>
         <p><a href="/urls/new" class="btn btn-success btn-lg">Create Short URL!</a></p>
         </div>
     </body>
