@@ -23,7 +23,7 @@ class DBContext {
         if (fs.existsSync(this.dbPath) && options.force !== true) {
             return
         } else {
-            let classes = fs.readdirSync(path.resolve(__dirname))
+            let classes = fs.readdirSync(path.resolve(__dirname, "../models/"))
                 .filter(e => !e.includes('model') && !e.includes('.json'))
                 .map(e => e.substring(0, e.indexOf('.')))
 
