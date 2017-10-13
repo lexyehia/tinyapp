@@ -96,6 +96,11 @@ class User extends Model {
         return URL.findAll({userID: this.id})
     }
 
+    destroy() {
+        this.urls().forEach(e => e.destroy())
+        super.destroy()
+    }
+
     /**
      * Updates the User object, making sure to check if password has changed 
      * first before updating it on the database-side
