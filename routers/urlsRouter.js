@@ -101,7 +101,7 @@ module.exports = (app) => {
 
         } else {
             // res.redirect(403, '/login')
-            res.status(403).render('users/login')
+            res.status(403).render('users/login', {alert: "Please log in first or register a new account!"})
         }
     })
 }
