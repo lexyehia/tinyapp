@@ -1,4 +1,5 @@
-const URL  = require('../models/url')
+const URL  = require('../models/url'),
+      User = require('../models/user')
 
 module.exports = (app) => {
 
@@ -12,9 +13,9 @@ module.exports = (app) => {
         if (url) {
             url.trackVisit(req.session)
             console.log(`Redirecting to ${url.url}`)
-            res.redirect(url.url)
+            res.redirect(301, url.url)
         } else {
-            res.redirect('/urls', {alert: "Cannot find that URL"})
+            res.status(404).render('404', {message: 'That short URL does not exist!'})
         }
     })
 
@@ -23,6 +24,12 @@ module.exports = (app) => {
     *   Redirects to /urls (index)
     **/
     app.get('/', (req, res) => {
-        res.redirect('/urls')
+        const user = User.verifySession(req.session)
+
+        if (user) {
+            res.redirect('/urls')            
+        } else {
+            res.redirect('/login')
+        }
     })
 }

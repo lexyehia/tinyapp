@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include ./partials/_head %>
+
+    <body>
+        <%- include ./partials/_header %>
+        <div align="center">
+        <h1>404: <% if (typeof message !== 'undefined') { %>
+        <%= message %>
+        <% } else { %>
+        Could not find page
+        <% } %></h1><br>
+        <p><img src="/img/404.png"></p>
+        </div>
+    </body>
+</html>

@@ -12,6 +12,7 @@ const PORT = process.env.PORT || 8080
 // Set middle-ware
 app.use(morgan('dev'))
 app.set('view engine', 'ejs')
+app.use(express.static('public'))
 app.use(methodOver('_method'))
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(cookieSession({
@@ -24,6 +25,11 @@ app.use(cookieSession({
 fs.readdirSync('./routers/').forEach(file => {
     const name = file.substr(0, file.indexOf('.'))
     require('./routers/' + name)(app)
+})
+
+// Any invalid urls will be redirected to custom 404 page
+app.use((req, res) => {
+    res.status(404).render('404')
 })
 
 // Start server

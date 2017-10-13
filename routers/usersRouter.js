@@ -15,6 +15,14 @@ module.exports = (app) => {
     *   Submit registration to create new user, redirect to /urls
     **/
     app.post('/register', (req, res) => {
+        if (req.body.password !== req.body.vpassword) {
+            res.render('users/new', {
+                alert: 'Password and verification did not match', 
+                email: req.body.email
+            })
+            return
+        }
+
         const user = User.create(req.body.email, req.body.password)
 
         if (user) {
@@ -22,7 +30,7 @@ module.exports = (app) => {
             req.session.user_id = user.id
             res.redirect('/urls')
         } else {
-            res.render("users/new", {alert: "Invalid email or password"})
+            res.render('users/new', {alert: 'Invalid email or password'})
         }
     })
 
@@ -32,12 +40,12 @@ module.exports = (app) => {
     **/
     app.get('/users/:id', (req, res) => {
         let user   = User.verifySession(req.session),
-            target = User.find(req.params.id); 
+            target = User.find(req.params.id) 
         
         if (user.id === target.id) {
             res.render('users/show', {user: target})
         } else {
-            res.redirect(403, '/urls')
+            res.status(403).render('404', {message: 'Access denied'})
         }
     })
 
@@ -47,7 +55,7 @@ module.exports = (app) => {
     **/
     app.put('/users/:id', (req, res) => {
         let user   = User.verifySession(req.session),
-            target = User.find(req.params.id); 
+            target = User.find(req.params.id)
 
         if (user.id === target.id) {
             console.log(`Updating user ID ${target.id}`)
@@ -56,7 +64,7 @@ module.exports = (app) => {
             target.update()
             res.redirect('/urls')
         } else {
-            res.status(403).render('users/show', {alert: 'Access denied', user: user})
+            res.status(403).render('404', {message: 'Access denied'})
         }
     })
 
@@ -71,11 +79,10 @@ module.exports = (app) => {
         if (user.id === target.id) {
             target.destroy()
             req.session.user_id = null
-            console.log(`${target.id} deletion succeeded. 
-            Redirecting to index`)
+            console.log(`User ID# ${target.id} deleted successfully. Redirecting to index`)
             res.redirect('/login')
         } else {
-            res.status(403).send('Access denied')
+            res.status(403).render('404', {message: 'Access denied'})
         }
     })
 
@@ -99,9 +106,8 @@ module.exports = (app) => {
             req.session.user_id = user.id
             res.redirect('/urls')            
         } else {
-            console.log("User not found!")
-            //res.status(403).send("Invalid credentials inputted")
-            res.status(403).render('users/login', {alert: "Invalid email or password"})
+            console.log('User not found!')
+            res.status(403).render('users/login', {alert: 'Invalid email or password'})
         }
     })
 
@@ -117,6 +123,6 @@ module.exports = (app) => {
             req.session.user_id = null
         }
 
-        res.render('users/login', {alert: "Logged out successfully. Please log back in."})
+        res.render('users/login', {alert: 'Logged out successfully. Please log back in.'})
     })
 }

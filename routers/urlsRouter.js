@@ -44,7 +44,7 @@ module.exports = (app) => {
         if (user && url.userID === user.id) {
             res.render('urls/show', {url : url, user: user})
         } else {
-            res.status(403).render('/urls', {alert: 'Access denied'})
+            res.status(403).render('404', {message: 'Access denied'})
         }
     })
 
@@ -63,8 +63,7 @@ module.exports = (app) => {
             url.save()
             res.redirect('/u/' + url.id)
         } else {
-            res.status(403).render('urls/show', {alert: 'Access denied', url: url,
-            user: user})
+            res.status(403).render('404', {message: 'Access denied'})
         }
     })
 
@@ -82,7 +81,7 @@ module.exports = (app) => {
                          Redirecting to index`)
             res.redirect('/urls')
         } else {
-            res.status(403).send('Access denied')
+            res.status(403).render('404', {message: 'Access denied'})
         }
     })
 
