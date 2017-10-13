@@ -5,12 +5,26 @@
     <body>
         <%- include ../partials/_header %>
         <div align=center class="form-group">
-        <form action="/urls/<%= url.id %>?_method=PUT" method="POST" style="margin:150px;">
-            <h2><label for="longURL">Change .../u/<b><%= url.id %></b> to</label></h2>
+        <form action="/urls/<%= url.id %>?_method=PUT" method="POST" style="margin:150px;margin-bottom:75px">
+            <h2><label for="longURL">Change localhost:8080/u/<b><%= url.id %></b> to</label></h2>
             <input class="form-control" id="longURL" type="text" name="longURL" value="<%= url.url %>"><br>
             <input type="submit" value="Submit" class="btn btn-success">
         </form>
         </div>
+        <table class="table" style="margin-bottom:1cm; margin-top:2cm; width: auto !important;" align="center">
+            <tr>
+                <td>Created on: </td>
+                <td><%= new Date(url.created).toLocaleString() %></td>
+            </tr>
+            <tr>
+                <td>Redirections: </td>
+                <td><%= url.redirects %></td>
+            </tr>
+            <tr>
+                <td>Unique Visits: </td>
+                <td><%= url.getTotalUniqueVisitors() %></td>
+            </tr>
+        </table>
         <table class="table" style="margin-bottom:1cm; margin-top:2cm; width: auto !important;" align="center">
             <th>Visitor ID</th>
             <th>Timestamp</th>

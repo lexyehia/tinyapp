@@ -26,6 +26,7 @@ class URL extends Model {
         url.url       = longURL
         url.userID    = user
         url.redirects = 0
+        url.created   = new Date()
         url.uniques   = []
 
         url.save()
