@@ -2,9 +2,24 @@ const tools  = require('../helpers/tools'),
       Model  = require('../db/model'),
       _      = require('lodash')
 
+/**
+ * The URL class, instances of this class would model to a document
+ * in the database, and persist when invoking the Model.save() method
+ * 
+ * @class URL
+ * @extends {Model}
+ */
 class URL extends Model {
 
-    // TODO: Fix this, it returns a redirect to undefined
+    /**
+     * Create a new instance of URL and persist to database
+     * 
+     * @static
+     * @param {number} user 
+     * @param {string} longURL 
+     * @returns {URL} new object
+     * @memberof URL
+     */
     static create(user, longURL) {
 
         let url       = new URL()
@@ -15,9 +30,14 @@ class URL extends Model {
 
         url.save()
         return url
-        
     }
 
+    /**
+     * Override base Model.save() to make sure 'http://' is 
+     * part of the url string
+     * 
+     * @memberof URL
+     */
     save() {
         if (!/^(f|ht)tps?:\/\//i.test(this.url)) {
             this.url = "http://" + this.url
@@ -25,6 +45,15 @@ class URL extends Model {
         super.save()
     }
 
+    /**
+     * When invoked by a URL object, it increments the object's 'redirects' 
+     * property, verifies if the redirected user has a tracking cookie, and 
+     * adds the tracked user's unique cookie ID and timestamp into the object's 
+     * 'uniques' property
+     * 
+     * @param {any} session 
+     * @memberof URL
+     */
     trackVisit(session) {
         this.redirects++
         
@@ -45,10 +74,16 @@ class URL extends Model {
         this.save()
     }
 
+    /**
+     * Counts the number of unique entries in the 'uniques' property array to 
+     * return the number of unique visitors of a particular URL object
+     * 
+     * @returns {number}
+     * @memberof URL
+     */
     getTotalUniqueVisitors() {
         return _.uniq(this.uniques.map(e => e[0])).length
     }
-
 }
 
 module.exports = URL

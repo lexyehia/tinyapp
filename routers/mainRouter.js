@@ -18,6 +18,10 @@ module.exports = (app) => {
         }
     })
 
+    /*
+    *   GET /
+    *   Redirects to /urls (index)
+    **/
     app.get('/', (req, res) => {
         res.redirect('/urls')
     })

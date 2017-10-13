@@ -8,7 +8,7 @@ module.exports = (app) => {
     *   Open new url form
     **/
     app.get('/urls/new', (req, res) => {
-        let user = User.verifySession(req.session)
+        const user = User.verifySession(req.session)
 
         if (user) {
             res.render('urls/new', {user: user})
@@ -22,13 +22,14 @@ module.exports = (app) => {
     *   Submit new url for registration, redirect to created url
     **/
     app.post('/urls/new', (req, res) => {
-        if (User.verifySession(req.session)) {
-            let url = URL.create(req.session.user_id, req.body.longURL)
+        const user = User.verifySession(req.session)
+
+        if (user) {
+            let url = URL.create(user.id, req.body.longURL)
             console.log(`Creating short url /u/${url.id} for ${url.url}`)
             res.redirect('/u/' + url.id)
         } else {
-            // res.status(403).send("Access denied")
-            res.status(403).render('urls/new', {alert: 'Access denied'})            
+            res.status(403).render('urls/new', {alert: 'Access denied'})
         }
     })
 
@@ -37,16 +38,13 @@ module.exports = (app) => {
     *   Open the Edit form of a particular url
     **/
     app.get('/urls/:id', (req, res) => {
-        let url = URL.find(req.params.id)
+        const url  = URL.find(req.params.id),
+              user = User.verifySession(req.session)
         
-        if (User.verifySession(req.session) && url.userID === req.session.user_id) {
-            res.render('urls/show', {
-                url : url,
-                user: User.find(req.session.user_id)
-            })
+        if (user && url.userID === user.id) {
+            res.render('urls/show', {url : url, user: user})
         } else {
-            // res.status(403).send("Access denied")
-            res.status(403).render('/urls', {alert: 'Access denied'})            
+            res.status(403).render('/urls', {alert: 'Access denied'})
         }
     })
 
@@ -55,18 +53,18 @@ module.exports = (app) => {
     *   Submit the Edit form, and modify existing url entry
     **/
     app.put('/urls/:id', (req, res) => {
-        let url = URL.find(req.params.id)
+        let url  = URL.find(req.params.id),
+            user = User.verifySession(req.session)
 
-        if (User.verifySession(req.session) && url.userID === req.session.user_id) {
-            console.log(`Updating short url /u/${url.id} to ${req.body.longURL}`)
+        if (user && user.id === url.userID) {
+            console.log(`Updating short url /u/${url.id} 
+                         to ${req.body.longURL}`)
             url.url = req.body.longURL
             url.save()
-
             res.redirect('/u/' + url.id)
         } else {
-             // res.status(403).send("Access denied")
             res.status(403).render('urls/show', {alert: 'Access denied', url: url,
-            user: User.find(req.session.user_id)})
+            user: user})
         }
     })
 
@@ -75,18 +73,18 @@ module.exports = (app) => {
     *   Delete one url
     **/
     app.delete('/urls/:id', (req, res) => {
-        let url = URL.find(req.params.id)
+        let url  = URL.find(req.params.id),
+            user = User.verifySession(req.session)
 
-        if (User.verifySession(req.session) && url.userID === req.session.user_id) {
+        if (user && url.userID === user.id) {
             url.destroy()
-            console.log(`${req.params.id} deletion succeeded. Redirecting to index`)
+            console.log(`${req.params.id} deletion succeeded. 
+                         Redirecting to index`)
             res.redirect('/urls')
-
         } else {
-            res.status(403).send("Access denied")
+            res.status(403).send('Access denied')
         }
     })
-
 
     /*
     *   GET /urls/
@@ -98,10 +96,8 @@ module.exports = (app) => {
         if (user) {
             let urls = user.urls()
             res.render('urls/index', { user: user, urls: urls })
-
         } else {
-            // res.redirect(403, '/login')
-            res.status(403).render('users/login', {alert: "Please log in first or register a new account!"})
+            res.status(403).render('users/login', {alert: 'Please log in first or register a new account!'})
         }
     })
 }

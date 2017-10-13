@@ -15,8 +15,7 @@ module.exports = (app) => {
     *   Submit registration to create new user, redirect to /urls
     **/
     app.post('/register', (req, res) => {
-
-        let user = User.create(req.body.email, req.body.password)
+        const user = User.create(req.body.email, req.body.password)
 
         if (user) {
             console.log(`Creating new user with ID# ${user.id}`)            
@@ -40,7 +39,7 @@ module.exports = (app) => {
     *   Create a new user session
     **/
     app.post('/login', (req, res) => {
-        let user = User.verifyPassword(req.body.email, req.body.password)
+        const user = User.verifyPassword(req.body.email, req.body.password)
 
         if (user) {
             console.log(`Logging in ${user.id}`)        
@@ -49,7 +48,7 @@ module.exports = (app) => {
         } else {
             console.log("User not found!")
             //res.status(403).send("Invalid credentials inputted")
-            res.status(403).render('users/login', {alert: "Invalid credentials inputted"})
+            res.status(403).render('users/login', {alert: "Invalid email or password"})
         }
     })
 
@@ -58,12 +57,13 @@ module.exports = (app) => {
     *   Delete current user's session
     **/
     app.delete('/logout', (req, res) => {
-        if (User.verifySession(req.session)) {
-            console.log(`Logging out ${req.session.user_id}`)
+        const user = User.verifySession(req.session)
+
+        if (user) {
+            console.log(`Logging out ${user.id}`)
             req.session.user_id = null
         }
 
-        // res.redirect('/urls')
         res.render('users/login', {alert: "Logged out successfully. Please log back in."})
     })
 }

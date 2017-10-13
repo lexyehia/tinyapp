@@ -5,7 +5,14 @@ const fs        = require('fs'),
       DBContext = require('./dbconfig'),
       DB        = DBContext.data
 
-const consolePrompt = chalk.bgBlue("DB NINJA: ")
+const consolePrompt = chalk.bgBlue("DB NINJA:")
+
+/**
+ * This is a base class to be inherited by another class, implementing
+ * a very rudimentary ORM system
+ * 
+ * @class Model
+ */
 class Model {
 
     /**
@@ -32,21 +39,22 @@ class Model {
      * @memberof Model
      */
     static find(query) {
-        //db   = db || new DBContext()
         let table = DB[this._getDBName()]
         let obj   = null
 
         if (typeof query === 'string' || typeof query === 'number') {
             obj = table.filter(e => e.id === query)[0]
 
-            console.log(consolePrompt, "FINDING OBJECT BY ID# " + chalk.red(query) + 
-                        " FROM DB " + chalk.green(this._getDBName().toUpperCase()))
+            console.log(consolePrompt, "FINDING OBJECT BY ID# " + 
+                        chalk.red(query) + " FROM DB " + 
+                        chalk.green(this._getDBName().toUpperCase()))
 
         } else if (typeof query === 'object') {
             obj = _.find(table, query)
             
-            console.log(consolePrompt, "FINDING OBJECT BY QUERY " + chalk.red(JSON.stringify(query)) + 
-                        " FROM DB " + this._getDBName().toUpperCase())
+            console.log(consolePrompt, "FINDING OBJECT BY QUERY " + 
+                        chalk.red(JSON.stringify(query)) + " FROM DB " + 
+                        chalk.green(this._getDBName().toUpperCase()))
         } else {
             throw Error("Improper query format")
         }
@@ -68,13 +76,14 @@ class Model {
      * @memberof Model
      */
     static findAll(query) {
-        //this.db   = this.db || new DBContext()
         let table = DB[this._getDBName()]
         let arr   = _.filter(table, query)
 
         arr = arr.map(e => _.assign(new this(), e))
+
         console.log(consolePrompt, "FINDING ALL OBJECTS WITH QUERY: " + 
-                    chalk.red(JSON.stringify(query)) + " FROM DB " + this._getDBName().toUpperCase())
+                    chalk.red(JSON.stringify(query)) + " FROM DB " 
+                    + chalk.green(this._getDBName().toUpperCase()))
 
         return arr
     }
@@ -89,16 +98,16 @@ class Model {
      * @memberof Model
      */
     static destroy(id) {
-        //this.db   = this.db || new DBContext()
         let table = DB[this._getDBName()]
         let obj   = table.filter(e => e.id === id)[0]
 
         if (obj) {
             DB[this._getDBName()] = table.filter(e => e !== obj)
+
             fs.writeFileSync(DBContext.dbPath, JSON.stringify(DB))
 
-            console.log(consolePrompt, "DELETING OBJECT " + chalk.red(obj.id) + " FROM DB " +
-                        this._getDBName().toUpperCase())
+            console.log(consolePrompt, "DELETING OBJECT " + chalk.red(obj.id) + 
+                        " FROM DB " + chalk.green(this._getDBName().toUpperCase()))
             return true
         } else {
             return false
@@ -110,11 +119,10 @@ class Model {
      * document in file already exists, and updates its properties, otherwise creates a new
      * document. Returns the saved object if successful.
      * 
-     * @returns {Model}
+     * @returns {Model} object
      * @memberof Model
      */
     save() {
-        //this.db   = this.db || new DBContext()
         let table = DB[this._getDBName()]
         let obj   = table.filter(e => e.id === this.id)[0]
 
@@ -128,9 +136,8 @@ class Model {
         try {
             fs.writeFileSync(DBContext.dbPath, JSON.stringify(DB))
 
-            console.log(consolePrompt, "SAVING OBJECT " + chalk.red(this.id) + " IN DB " + 
-                        this._getDBName().toUpperCase())
-
+            console.log(consolePrompt, "SAVING OBJECT " + chalk.red(this.id) + 
+                        " IN DB " + chalk.green(this._getDBName().toUpperCase()))
             return this
 
         } catch (err) {
@@ -146,17 +153,15 @@ class Model {
      * @memberof Model
      */
     retrieveDBCopy() {
-       // this.db   = this.db || new DBContext()
         let table = DB[this._getDBName()]
         let obj   = table.filter(e => e.id === this.id)[0]
 
         if (obj) {
-            console.log(consolePrompt, "FETCHING COPY OF ITEM " + chalk.red(obj.id) +
-                        " FROM DB " + this._getDBName().toUpperCase())
-           
+            console.log(consolePrompt, "FETCHING COPY OF ITEM " + 
+                        chalk.red(obj.id) + " FROM DB " + 
+                        chalk.green(this._getDBName().toUpperCase()))
             return obj
         } else {
-
             return null
         }
     }
@@ -168,7 +173,6 @@ class Model {
      * @memberof Model
      */
     destroy() {
-       // this.db   = this.db || new DBContext()
         let table = DB[this._getDBName()]
         let obj   = table.filter(e => e.id === this.id)[0]
 
@@ -177,7 +181,7 @@ class Model {
             fs.writeFileSync(DBContext.dbPath, JSON.stringify(DB))
             
             console.log(consolePrompt, "DELETING OBJECT " + chalk.red(obj.id) +
-                        " FROM DB " + this._getDBName().toUpperCase())
+                        " FROM DB " + chalk.green(this._getDBName().toUpperCase()))
             return true
         } else {
             return false
