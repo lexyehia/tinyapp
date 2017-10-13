@@ -41,7 +41,7 @@ module.exports = (app) => {
         const url  = URL.find(req.params.id),
               user = User.verifySession(req.session)
         
-        if (user && url.userID === user.id) {
+        if (user && url && url.userID === user.id) {
             res.render('urls/show', {url : url, user: user})
         } else {
             res.status(403).render('404', {message: 'Access denied'})
@@ -56,7 +56,7 @@ module.exports = (app) => {
         let url  = URL.find(req.params.id),
             user = User.verifySession(req.session)
 
-        if (user && user.id === url.userID) {
+        if (user && url && user.id === url.userID) {
             console.log(`Updating short url /u/${url.id} 
                          to ${req.body.longURL}`)
             url.url = req.body.longURL
@@ -75,7 +75,7 @@ module.exports = (app) => {
         let url  = URL.find(req.params.id),
             user = User.verifySession(req.session)
 
-        if (user && url.userID === user.id) {
+        if (user && url && url.userID === user.id) {
             url.destroy()
             console.log(`${req.params.id} deletion succeeded. 
                          Redirecting to index`)

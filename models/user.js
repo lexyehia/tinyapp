@@ -28,13 +28,11 @@ class User extends Model {
         let user      = new User()
         user.id       = tools.generateRandomString(6)
         user.email    = email
+        user.created  = new Date()
         user.password = bcrypt.hashSync(password, 10)
 
-        if (user.save()) {
-            return user
-        } else {
-            return false
-        }
+        user.save()
+        return user
     }
 
     /**

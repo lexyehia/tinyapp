@@ -15,10 +15,12 @@ module.exports = (app) => {
     *   Submit registration to create new user, redirect to /urls
     **/
     app.post('/register', (req, res) => {
+
+        // Compare Password and Verify Password first
         if (req.body.password !== req.body.vpassword) {
             res.render('users/new', {
-                alert: 'Password and verification did not match', 
-                email: req.body.email
+                email: req.body.email,                
+                alert: 'Password and verification did not match'
             })
             return
         }
@@ -42,7 +44,7 @@ module.exports = (app) => {
         let user   = User.verifySession(req.session),
             target = User.find(req.params.id) 
         
-        if (user.id === target.id) {
+        if (user && target && user.id === target.id) {
             res.render('users/show', {user: target})
         } else {
             res.status(403).render('404', {message: 'Access denied'})
@@ -57,12 +59,16 @@ module.exports = (app) => {
         let user   = User.verifySession(req.session),
             target = User.find(req.params.id)
 
-        if (user.id === target.id) {
-            console.log(`Updating user ID ${target.id}`)
-            target.email = req.body.email 
-            target.password = req.body.password || user.password
+        if (user && target && user.id === target.id) {
+            target.email    = req.body.email 
+            target.password = req.body.password || target.password
+            console.log(`Updating user ID ${target.id}`)            
             target.update()
-            res.redirect('/urls')
+            res.render('users/show', {
+                alert: 'Profile updated', 
+                style: 'success', 
+                user: target
+            })
         } else {
             res.status(403).render('404', {message: 'Access denied'})
         }
@@ -76,7 +82,7 @@ module.exports = (app) => {
         let user   = User.verifySession(req.session),
             target = User.find(req.params.id); 
 
-        if (user.id === target.id) {
+        if (user && target && user.id === target.id) {
             target.destroy()
             req.session.user_id = null
             console.log(`User ID# ${target.id} deleted successfully. Redirecting to index`)
@@ -123,6 +129,9 @@ module.exports = (app) => {
             req.session.user_id = null
         }
 
-        res.render('users/login', {alert: 'Logged out successfully. Please log back in.'})
+        res.render('users/login', {
+            alert: 'Logged out successfully. Please log back in.',
+            style: 'info'
+        })
     })
 }
