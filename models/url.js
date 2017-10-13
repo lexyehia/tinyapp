@@ -4,6 +4,7 @@ const tools  = require('../helpers/tools'),
 
 class URL extends Model {
 
+    // TODO: Fix this, it returns a redirect to undefined
     static create(user, longURL) {
 
         let url       = new URL()
@@ -12,11 +13,9 @@ class URL extends Model {
         url.redirects = 0
         url.uniques   = []
 
-        if (url.save()) {
-            return url
-        } else {
-            return false
-        }
+        url.save()
+        return url
+        
     }
 
     save() {

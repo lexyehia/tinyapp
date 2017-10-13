@@ -1,12 +1,13 @@
-const fs = require('fs');
-const _ = require('lodash');
-const tools = require('../helpers/tools');
-const DBContext = require('./dbconfig');
-const DB = DBContext.data;
+const fs        = require('fs'),
+      _         = require('lodash'),
+      chalk     = require('chalk'),
+      tools     = require('../helpers/tools'),
+      DBContext = require('./dbconfig'),
+      DB        = DBContext.data
 
+const consolePrompt = chalk.bgBlue("DB NINJA: ")
 class Model {
 
-    // TODO: Future use
     /**
      * Fetch an array of all documents in a particular collection
      * 
@@ -15,7 +16,9 @@ class Model {
      * @memberof Model
      */
     static all() {
-        console.log("FETCHING ALL OBJECTS FROM DB " + this._getDBName().toUpperCase())
+        console.log(consolePrompt, "FETCHING ALL OBJECTS FROM DB " + 
+                    chalk.green(this._getDBName().toUpperCase()))
+
         return DB[this._getDBName()]
     }
 
@@ -35,10 +38,15 @@ class Model {
 
         if (typeof query === 'string' || typeof query === 'number') {
             obj = table.filter(e => e.id === query)[0]
-            console.log("FINDING OBJECT BY ID# " + query + " FROM DB " + this._getDBName().toUpperCase())
+
+            console.log(consolePrompt, "FINDING OBJECT BY ID# " + chalk.red(query) + 
+                        " FROM DB " + chalk.green(this._getDBName().toUpperCase()))
+
         } else if (typeof query === 'object') {
             obj = _.find(table, query)
-            console.log("FINDING OBJECT BY QUERY " + JSON.stringify(query) + " FROM DB " + this._getDBName().toUpperCase())
+            
+            console.log(consolePrompt, "FINDING OBJECT BY QUERY " + chalk.red(JSON.stringify(query)) + 
+                        " FROM DB " + this._getDBName().toUpperCase())
         } else {
             throw Error("Improper query format")
         }
@@ -65,7 +73,9 @@ class Model {
         let arr   = _.filter(table, query)
 
         arr = arr.map(e => _.assign(new this(), e))
-        console.log("FINDING ALL OBJECTS WITH QUERY: " + JSON.stringify(query) + " FROM DB " + this._getDBName().toUpperCase())
+        console.log(consolePrompt, "FINDING ALL OBJECTS WITH QUERY: " + 
+                    chalk.red(JSON.stringify(query)) + " FROM DB " + this._getDBName().toUpperCase())
+
         return arr
     }
 
@@ -86,7 +96,9 @@ class Model {
         if (obj) {
             DB[this._getDBName()] = table.filter(e => e !== obj)
             fs.writeFileSync(DBContext.dbPath, JSON.stringify(DB))
-            console.log("DELETING OBJECT " + obj.id + " FROM DB " + this._getDBName().toUpperCase())
+
+            console.log(consolePrompt, "DELETING OBJECT " + chalk.red(obj.id) + " FROM DB " +
+                        this._getDBName().toUpperCase())
             return true
         } else {
             return false
@@ -115,8 +127,12 @@ class Model {
 
         try {
             fs.writeFileSync(DBContext.dbPath, JSON.stringify(DB))
-            console.log("SAVING OBJECT " + this.id + " IN DB " + this._getDBName().toUpperCase())
+
+            console.log(consolePrompt, "SAVING OBJECT " + chalk.red(this.id) + " IN DB " + 
+                        this._getDBName().toUpperCase())
+
             return this
+
         } catch (err) {
             return null
         }
@@ -135,9 +151,12 @@ class Model {
         let obj   = table.filter(e => e.id === this.id)[0]
 
         if (obj) {
-            console.log("FETCHING COPY OF ITEM " + obj.id + " FROM DB " + this._getDBName().toUpperCase())
+            console.log(consolePrompt, "FETCHING COPY OF ITEM " + chalk.red(obj.id) +
+                        " FROM DB " + this._getDBName().toUpperCase())
+           
             return obj
         } else {
+
             return null
         }
     }
@@ -155,8 +174,10 @@ class Model {
 
         if (obj) {
             DB[this._getDBName()] = table.filter(e => e !== obj)
-            console.log("DELETING OBJECT " + obj.id + " FROM DB " + this._getDBName().toUpperCase())
             fs.writeFileSync(DBContext.dbPath, JSON.stringify(DB))
+            
+            console.log(consolePrompt, "DELETING OBJECT " + chalk.red(obj.id) +
+                        " FROM DB " + this._getDBName().toUpperCase())
             return true
         } else {
             return false

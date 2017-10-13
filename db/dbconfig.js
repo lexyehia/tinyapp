@@ -1,14 +1,13 @@
 const fs   = require('fs'),
       path = require('path')
 
+const dbSelect = 'db.json'
+//const dbSelect = 'db-test.json' 
+
 class DBContext {
     constructor() {
-        this.dbPath = path.resolve(__dirname, 'db.json')
-
-        if (this.data === undefined) {
-            this.data = this._connect()
-        }
-
+        this.dbPath = path.resolve(__dirname, dbSelect)
+        this.data = this.data || this._connect()
         return this
     }
 
@@ -24,7 +23,7 @@ class DBContext {
         if (fs.existsSync(this.dbPath) && options.force !== true) {
             return
         } else {
-            let classes   = fs.readdirSync(path.resolve(__dirname))
+            let classes = fs.readdirSync(path.resolve(__dirname))
                 .filter(e => !e.includes('model') && !e.includes('.json'))
                 .map(e => e.substring(0, e.indexOf('.')))
 
