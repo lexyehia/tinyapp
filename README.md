@@ -12,6 +12,8 @@ My app deviates a bit from the project specifications, mainly to improve upon th
 
 - I have divided the various views into appropriate subfolders (and renamed them accordingly).
 
+- I have added an account management functionality, allowing the user to both Edit and Delete his account (full CRUD).
+
 ### Running it
 
 To start the app, make sure you `npm install && npm start` first. The app can then be accessed at `http://localhost:8080`.
